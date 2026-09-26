@@ -81,10 +81,10 @@ provider or a customer environment.
 - No fresh-machine Windows proof, code signature, or SmartScreen acceptance exists.
 - No real Xero call, owner consent, customer adoption, or company-production
   deployment is claimed.
-- The clean public branch and anonymous fetch are verified. The first manual
-  Actions run found a Windows-only test routed to Ubuntu; exact-head CI is being
-  rerun after separating the platform-specific tests. No v0.6.0 tag, Release,
-  or downloaded asset has been verified.
+- The clean public branch and anonymous fetch are verified. Manual CI on commit
+  `8f82fd9` passed both the Ubuntu application and Windows appliance jobs.
+  Pushes to `main` and pull requests now start the primary CI automatically.
+  No v0.6.0 tag, Release, or downloaded asset has been verified.
 
 Historical candidate.1-candidate.4 JSON reports remain evidence for the `0.5.0`
 productization work that produced them. They are not rewritten as `0.6.0`
@@ -93,8 +93,8 @@ evidence.
 ## Publication gate
 
 The local portfolio gate is closed and the source branch is public. The remaining
-release steps are exact-head CI, a v0.6.0 tag, asset upload, and downloaded
-checksum verification. The original source is still private as
+release steps are green CI on the release head, a v0.6.0 tag, asset upload,
+and downloaded checksum verification. The original source is still private as
 `FlowProof-archive`. The machine-readable counterpart is `release/STATUS.json`.
 Local source tests,
 runtime proof, packaging proof, GitHub publication, real-provider acceptance,

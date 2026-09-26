@@ -10,6 +10,8 @@
 - Publication: `BRANCH_PUBLISHED`; the source repository is public, but no
   v0.6.0 tag or downloadable Windows asset has been published.
 - GitHub destination: [PaleSyntax/FlowProof](https://github.com/PaleSyntax/FlowProof).
+- CI: the manual run for commit `8f82fd9` passed on Ubuntu and Windows;
+  subsequent pushes to `main` and pull requests run the primary CI automatically.
 - Migration head: `0010_release_groundwork_fencing`.
 - Evidence capsule schema: `1.1`; legacy `1.0` requires explicit opt-in.
 - Portfolio readiness: clean locked backend, frontend, contracts, Gitleaks,

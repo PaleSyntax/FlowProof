@@ -122,7 +122,7 @@ python scripts/check_action_pins.py
 cd frontend && npm ci && npm run lint && npm run build
 ```
 
-На Windows три теста блокировки файла штатно пропускаются: они требуют Linux/POSIX. GitHub Actions пока запускаются вручную.
+На Windows три теста блокировки файла штатно пропускаются: они требуют Linux/POSIX. Основной CI запускается при push в `main` и для pull request. Отдельные проверки контейнеров, развёртывания и внешних зависимостей остаются ручными.
 
 ## Стек
 
