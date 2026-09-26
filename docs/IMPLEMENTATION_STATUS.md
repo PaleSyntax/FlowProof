@@ -4,11 +4,12 @@
 
 - Package line: `0.6.0` (`LOCAL_PORTFOLIO_RELEASE_READY`).
 - Source base: published private `v0.5.0` at commit `da9057a`; PR #8 is merged.
-- Candidate: clean local commits on `codex/showable-niche-product`; not pushed,
-  tagged, or published by this preparation work.
+- Candidate source: `codex/showable-niche-product` remains in the private
+  `FlowProof-archive`. The clean public `main` began at commit `7f292ac`.
 - PR #7 remains a historical draft pending unique-diff review; it has not been closed by this work.
-- Publication: `PRIVATE_UNPUBLISHED`; no repository visibility was changed.
-- GitHub destination: `OWNER_INPUT_REQUIRED`; the current personal remote will not be made public automatically.
+- Publication: `BRANCH_PUBLISHED`; the source repository is public, but no
+  v0.6.0 tag or downloadable Windows asset has been published.
+- GitHub destination: [PaleSyntax/FlowProof](https://github.com/PaleSyntax/FlowProof).
 - Migration head: `0010_release_groundwork_fencing`.
 - Evidence capsule schema: `1.1`; legacy `1.0` requires explicit opt-in.
 - Portfolio readiness: clean locked backend, frontend, contracts, Gitleaks,

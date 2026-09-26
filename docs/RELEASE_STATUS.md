@@ -16,9 +16,10 @@
 
 FlowProof `0.6.0` is locally ready as a portfolio release candidate. Source,
 fixture runtime, real local n8n, desktop/mobile UI, owned-image security, and an
-extracted source-free Windows candidate have all passed their local gates. It is
-not yet a published release: no GitHub publication step was performed. The
-accepted private `v0.5.0` release remains the historical baseline.
+extracted source-free Windows candidate have all passed their local gates. Its
+clean source branch is public at [PaleSyntax/FlowProof](https://github.com/PaleSyntax/FlowProof).
+It is not yet a published v0.6.0 release: no tag or downloadable asset has been
+published. The accepted private `v0.5.0` release remains the historical baseline.
 
 This file deliberately separates a reproducible portfolio demonstration from a
 real-provider pilot, clean-Windows usability proof, and company-production
@@ -28,7 +29,7 @@ certification.
 
 | Axis | Current status | What closes it |
 | --- | --- | --- |
-| Portfolio release | `LOCAL_PORTFOLIO_RELEASE_READY` | Execute exact-head CI, make the chosen repository public, publish the tag/assets, download-check them, and verify an anonymous clone. |
+| Portfolio release | `LOCAL_PORTFOLIO_RELEASE_READY` | Complete exact-head CI, publish the tag/assets, and download-check them. The public branch and anonymous fetch are verified. |
 | Real provider | `NOT_VERIFIED_EXTERNAL` | Owner-authorized Xero Demo consent, one bounded invoice read, and one named-human review. |
 | Fresh Windows | `NOT_VERIFIED_EXTERNAL` | Independent same-user Windows 11 VM or fresh interactive tester lifecycle. |
 | Company production | `NOT_CLAIMED` | Company infrastructure, security, operations, and owner acceptance. |
@@ -80,8 +81,10 @@ provider or a customer environment.
 - No fresh-machine Windows proof, code signature, or SmartScreen acceptance exists.
 - No real Xero call, owner consent, customer adoption, or company-production
   deployment is claimed.
-- No GitHub repository, visibility, pull request, Actions run, tag, Release, or
-  anonymous clone was changed or verified during this preparation.
+- The clean public branch and anonymous fetch are verified. The first manual
+  Actions run found a Windows-only test routed to Ubuntu; exact-head CI is being
+  rerun after separating the platform-specific tests. No v0.6.0 tag, Release,
+  or downloaded asset has been verified.
 
 Historical candidate.1-candidate.4 JSON reports remain evidence for the `0.5.0`
 productization work that produced them. They are not rewritten as `0.6.0`
@@ -89,14 +92,11 @@ evidence.
 
 ## Publication gate
 
-The local portfolio gate is closed. The owner can now follow
-[the English publication guide](PUBLISH_TO_GITHUB_EN.md) or
-[the Russian publication guide](PUBLISH_TO_GITHUB_RU.md): push the candidate,
-require real exact-head CI steps, merge, tag, upload and download-check assets,
-then verify an anonymous public clone.
-
-The current personal remote is not made public automatically. The
-machine-readable counterpart is `release/STATUS.json`. Local source tests,
+The local portfolio gate is closed and the source branch is public. The remaining
+release steps are exact-head CI, a v0.6.0 tag, asset upload, and downloaded
+checksum verification. The original source is still private as
+`FlowProof-archive`. The machine-readable counterpart is `release/STATUS.json`.
+Local source tests,
 runtime proof, packaging proof, GitHub publication, real-provider acceptance,
 fresh-machine usability, and company-production acceptance are independent
 evidence axes.

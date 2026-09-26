@@ -5,10 +5,10 @@
   "release_track": "portfolio_productization",
   "portfolio_release": {
     "classification": "PORTFOLIO_RELEASE_CANDIDATE",
-    "publication_state": "PRIVATE_UNPUBLISHED",
-    "repository_visibility": "PRIVATE",
+    "publication_state": "BRANCH_PUBLISHED",
+    "repository_visibility": "PUBLIC",
     "target_tag": "v0.6.0",
-    "professional_destination": "OWNER_INPUT_REQUIRED"
+    "professional_destination": "https://github.com/PaleSyntax/FlowProof"
   },
   "source_state": {
     "base_release": "v0.5.0",
@@ -34,7 +34,7 @@
   "acceptance_axes": {
     "portfolio_release": {
       "status": "LOCAL_PORTFOLIO_RELEASE_READY",
-      "required_evidence": "Executed exact-head GitHub Actions, a public anonymous clone, and published v0.6.0 assets downloaded and checksum-verified."
+      "required_evidence": "Executed exact-head GitHub Actions and published v0.6.0 assets downloaded and checksum-verified."
     },
     "real_provider": {
       "status": "NOT_VERIFIED_EXTERNAL",
