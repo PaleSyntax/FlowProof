@@ -1,0 +1,104 @@
+{
+    "schema_version":  "1.0",
+    "session_id":  "ff19c7f0-8133-49cc-a5a2-2156fe5d61dd",
+    "started_at":  "2026-08-08T09:54:32.1824266Z",
+    "completed_at":  "2026-08-08T09:54:38.2036877Z",
+    "tester_role":  "automated disposable local Windows profile",
+    "environment":  {
+                        "windows_version":  "Microsoft Windows NT 10.0.22631.0",
+                        "architecture":  "x86_64",
+                        "profile_type":  "fresh_local_profile",
+                        "source_checkout_present":  false,
+                        "preinstalled_tools":  [
+                                                   "Docker Desktop"
+                                               ]
+                    },
+    "artifact":  {
+                     "filename":  "FlowProof-Windows-x86_64-0.5.0-productization-candidate.3.zip",
+                     "sha256":  "7d46dc2905912c10619ce9badb02914021f06bc3a96f5cdb04bbb3c4ffcfcfc6",
+                     "git_commit":  "da9057ac21be3fa7ac7e88d19bca9abc509abac9",
+                     "git_tree":  "f88908bf75dcd336e2df33a2907c6a53c313725d"
+                 },
+    "metrics":  {
+                    "download_to_running_seconds":  null,
+                    "running_to_first_demo_outcome_seconds":  null,
+                    "mandatory_decision_count":  null,
+                    "terminal_command_count":  0,
+                    "manual_secret_handoff_count":  0,
+                    "support_intervention_count":  0,
+                    "install_failure_count":  1
+                },
+    "stages":  {
+                   "prerequisite_check":  {
+                                              "status":  "PASS",
+                                              "evidence":  [
+                                                               "Stage completed before the later install failure"
+                                                           ],
+                                              "note":  null
+                                          },
+                   "install":  {
+                                   "status":  "FAIL",
+                                   "evidence":  [
+                                                    "error_type=RuntimeException"
+                                                ],
+                                   "note":  "Docker operation failed.  Network flowproof-appliance_application Creating \r\n Network flowproof-appliance_application Created \r\n Network flowproof-appliance_database Creating \r\n Network flowproof-appliance_database Created \r\n Container flowproof-appliance-postgres-1 Creating \r\n Container flowproof-appliance-mock-accounting-1 Creating \r\n service:postgres:1 Error response from daemon: invalid mount config for type \"bind\": stat /run/desktop/mnt/host/c/Users/FPQuald3387707/AppData/Local/FlowProofQua"
+                               },
+                   "first_open":  {
+                                      "status":  "NOT_RUN",
+                                      "evidence":  [
+
+                                                   ],
+                                      "note":  null
+                                  },
+                   "safe_demo":  {
+                                     "status":  "NOT_RUN",
+                                     "evidence":  [
+
+                                                  ],
+                                     "note":  null
+                                 },
+                   "restart_reopen":  {
+                                          "status":  "NOT_RUN",
+                                          "evidence":  [
+
+                                                       ],
+                                          "note":  null
+                                      },
+                   "diagnostics_export":  {
+                                              "status":  "NOT_RUN",
+                                              "evidence":  [
+
+                                                           ],
+                                              "note":  null
+                                          },
+                   "backup":  {
+                                  "status":  "NOT_RUN",
+                                  "evidence":  [
+
+                                               ],
+                                  "note":  null
+                              },
+                   "uninstall_preserve":  {
+                                              "status":  "NOT_RUN",
+                                              "evidence":  [
+
+                                                           ],
+                                              "note":  null
+                                          },
+                   "reinstall_retention":  {
+                                               "status":  "NOT_RUN",
+                                               "evidence":  [
+
+                                                            ],
+                                               "note":  null
+                                           }
+               },
+    "security":  {
+                     "credentials_in_artifact":  false,
+                     "env_file_in_artifact":  false,
+                     "database_in_artifact":  false,
+                     "raw_customer_data_in_artifact":  false
+                 },
+    "result":  "FAIL",
+    "blocker":  "FRESH_LOCAL_PROFILE_STAGE_FAILED: stage=install; Docker operation failed.  Network flowproof-appliance_application Creating \r\n Network flowproof-appliance_application Created \r\n Network flowproof-appliance_database Creating \r\n Network flowproof-appliance_database Created \r\n Container flowproof-appliance-postgres-1 Creating \r\n Container flowproof-appliance-mock-accounting-1 Creating \r\n service:postgres:1 Error response from daemon: invalid mount config for type \"bind\": stat /run/desktop/mnt/host/c/Users/FPQuald3387707/AppData/Local/FlowProofQua"
+}

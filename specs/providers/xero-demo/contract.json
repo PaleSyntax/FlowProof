@@ -1,0 +1,47 @@
+{
+  "provider_id": "xero-demo",
+  "adapter_version": "0.6.0-xero-demo-read-only",
+  "environment": "sandbox",
+  "contract_version": "xero-accounting-2.0-demo-read-only-1",
+  "sandbox_only": true,
+  "authoritative_read": {
+    "base_url": "https://api.xero.com/api.xro/2.0",
+    "endpoint_semantics": "GET /Invoices/{invoice_id}",
+    "oauth_scopes": ["accounting.invoices.read", "accounting.settings.read"],
+    "connection_flow": "OAuth 2.0 Authorization Code with PKCE and localhost callback",
+    "demo_company_requirement": "IsDemoCompany=true",
+    "not_found": "AVAILABLE_ABSENT",
+    "normalized_projection": ["invoice_id", "amount", "currency", "status"]
+  },
+  "authentication": {
+    "mode": "oauth2-pkce-user-consent",
+    "credential_reference": "not-applicable"
+  },
+  "rate_limits": {
+    "classification": "UNVERIFIED",
+    "retry_after": "bounded integer seconds when present"
+  },
+  "idempotency": {
+    "support": "NOT_APPLICABLE_READ_ONLY",
+    "scope": "no provider mutation is implemented"
+  },
+  "duplicate_guarantees": {
+    "classification": "CONTRACT_TESTED",
+    "identity": "InvoiceID or InvoiceNumber"
+  },
+  "write_acceptance": {
+    "classification": "CONTRACT_TESTED",
+    "accepted_statuses": [],
+    "mutation": "FORBIDDEN_BY_ADAPTER"
+  },
+  "read_after_write": {
+    "consistency": "NOT_APPLICABLE_READ_ONLY"
+  },
+  "maximum_safe_write_attempts": 1,
+  "evidence_classification": {
+    "overall": "CONTRACT_TESTED",
+    "rate_limits": "UNVERIFIED",
+    "authentication": "DOCUMENTED"
+  },
+  "sha256": "0282cd91522eb44816c971499834c8e437204abb75070a30532faf536d41bb1f"
+}

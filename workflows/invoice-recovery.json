@@ -1,0 +1,365 @@
+{
+  "name": "FlowProof Approved Invoice Recovery",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "flowproof-recovery",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Approved recovery webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "webhookId": "4d8bea12-0cce-4ce0-86c8-68f51c061003",
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json.body ?? $input.first().json;\nif (!input.plan_id || !input.plan_hash || !input.correlation_id) throw new Error('Invalid recovery request');\nreturn [{ json: { plan_id: input.plan_id, plan_hash: input.plan_hash, correlation_id: input.correlation_id } }];"
+      },
+      "name": "Normalize recovery request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{'http://api:8000' + '/api/v1/recovery-plans/' + $('Normalize recovery request').first().json.plan_id}}",
+        "options": {
+          "timeout": 5000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "name": "Fetch immutable plan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "FlowProof API service account",
+          "id": "flowproof-api-service-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json.status + ':' + $json.action_type}}",
+              "rightValue": "approved:register_missing_invoice",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      },
+      "name": "Check approved allowlisted plan",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json.plan_hash}}",
+              "rightValue": "={{$('Normalize recovery request').first().json.plan_hash}}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      },
+      "name": "Check immutable plan hash",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        700,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/v1/events",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { idempotency_key: 'recovery-start:' + $('Fetch immutable plan').first().json.id, correlation_id: $('Normalize recovery request').first().json.correlation_id, entity_type: 'invoice', entity_id: $('Fetch immutable plan').first().json.parameters.invoice_id, event_type: 'recovery.execution_started', occurred_at: $now.toISO(), source: { system: 'n8n', workflow_id: 'invoice-recovery', execution_id: $execution.id, node_name: 'Emit recovery.execution_started' }, payload: { plan_id: $('Fetch immutable plan').first().json.id, plan_hash: $('Fetch immutable plan').first().json.plan_hash } } }}",
+        "options": {
+          "timeout": 5000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "name": "Emit recovery.execution_started",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        -100
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "FlowProof API service account",
+          "id": "flowproof-api-service-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{'http://api:8000' + '/api/v1/recovery-plans/' + $('Fetch immutable plan').first().json.id + '/execute'}}",
+        "options": {
+          "timeout": 10000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "name": "Execute allowlisted FlowProof plan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1180,
+        -100
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "FlowProof API service account",
+          "id": "flowproof-api-service-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/v1/events",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { idempotency_key: 'recovery-executed:' + $('Fetch immutable plan').first().json.id, correlation_id: $('Normalize recovery request').first().json.correlation_id, entity_type: 'invoice', entity_id: $('Fetch immutable plan').first().json.parameters.invoice_id, event_type: 'recovery.executed', occurred_at: $now.toISO(), source: { system: 'n8n', workflow_id: 'invoice-recovery', execution_id: $execution.id, node_name: 'Emit recovery.executed' }, payload: { plan_id: $('Fetch immutable plan').first().json.id } } }}",
+        "options": {
+          "timeout": 5000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "name": "Emit recovery.executed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1420,
+        -100
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "FlowProof API service account",
+          "id": "flowproof-api-service-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{'http://api:8000' + '/api/v1/recovery-plans/' + $('Fetch immutable plan').first().json.id + '/verify'}}",
+        "options": {
+          "timeout": 10000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "name": "Verify authoritative outcome",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1660,
+        -100
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "FlowProof API service account",
+          "id": "flowproof-api-service-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: $('Verify authoritative outcome').first().json.status, plan_id: $('Fetch immutable plan').first().json.id } }}",
+        "options": {}
+      },
+      "name": "Return recovery result",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1900,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: 'blocked', reason: 'approval, allowlist, or plan-hash check failed' } }}",
+        "options": {}
+      },
+      "name": "Return blocked recovery",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        940,
+        160
+      ]
+    }
+  ],
+  "connections": {
+    "Approved recovery webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize recovery request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize recovery request": {
+      "main": [
+        [
+          {
+            "node": "Fetch immutable plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch immutable plan": {
+      "main": [
+        [
+          {
+            "node": "Check approved allowlisted plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check approved allowlisted plan": {
+      "main": [
+        [
+          {
+            "node": "Check immutable plan hash",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return blocked recovery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check immutable plan hash": {
+      "main": [
+        [
+          {
+            "node": "Emit recovery.execution_started",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return blocked recovery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emit recovery.execution_started": {
+      "main": [
+        [
+          {
+            "node": "Execute allowlisted FlowProof plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute allowlisted FlowProof plan": {
+      "main": [
+        [
+          {
+            "node": "Emit recovery.executed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emit recovery.executed": {
+      "main": [
+        [
+          {
+            "node": "Verify authoritative outcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify authoritative outcome": {
+      "main": [
+        [
+          {
+            "node": "Return recovery result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "id": "flowproof-invoice-recovery"
+}

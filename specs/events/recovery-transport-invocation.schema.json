@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/recovery-transport-invocation.schema.json",
+  "title": "FlowProof durable transport reservation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "recovery_attempt_id",
+    "recovery_plan_id",
+    "approval_decision_id",
+    "invocation_ordinal",
+    "request_digest",
+    "reserved_at",
+    "state",
+    "dispatch_owner",
+    "dispatch_generation",
+    "dispatch_started_at",
+    "dispatch_lease_expires_at",
+    "abandoned_at",
+    "abandoned_by",
+    "abandonment_reason",
+    "reconciliation_owner",
+    "reconciliation_generation",
+    "reconciliation_started_at",
+    "reconciliation_lease_expires_at",
+    "reconciliation_abandoned_at",
+    "outcome_classification",
+    "outcome_observed_at",
+    "provider_operation_reference",
+    "retry_after_seconds",
+    "safe_outcome",
+    "completed_at",
+    "lock_version"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "recovery_attempt_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "recovery_plan_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "approval_decision_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "invocation_ordinal": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "request_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "reserved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "state": {
+      "enum": [
+        "OUTCOME_UNRECORDED",
+        "DISPATCHING",
+        "ACCEPTED",
+        "OUTCOME_UNKNOWN",
+        "PRE_ACCEPTANCE_FAILED",
+        "RECONCILING",
+        "EFFECT_PRESENT",
+        "EFFECT_ABSENT",
+        "CONFLICT"
+      ]
+    },
+    "dispatch_owner": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "dispatch_generation": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    },
+    "dispatch_started_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "dispatch_lease_expires_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "abandoned_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "abandoned_by": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "abandonment_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "reconciliation_owner": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "reconciliation_generation": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reconciliation_started_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "reconciliation_lease_expires_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "reconciliation_abandoned_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "outcome_classification": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 64
+    },
+    "outcome_observed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "provider_operation_reference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 255
+    },
+    "retry_after_seconds": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 86400
+    },
+    "safe_outcome": {
+      "type": "object"
+    },
+    "completed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "lock_version": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

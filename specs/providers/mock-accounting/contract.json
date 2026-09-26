@@ -1,0 +1,42 @@
+{
+  "provider_id": "mock-accounting",
+  "adapter_version": "0.6.0-test-fixture",
+  "environment": "sandbox",
+  "contract_version": "fixture-1",
+  "sandbox_only": true,
+  "authoritative_read": {
+    "endpoint_semantics": "GET /invoices/{invoice_id}",
+    "not_found": "AVAILABLE_ABSENT",
+    "normalized_projection": ["invoice_id", "id", "amount", "currency", "status"]
+  },
+  "authentication": {
+    "mode": "none-test-fixture",
+    "credential_reference": "not-applicable"
+  },
+  "rate_limits": {
+    "classification": "UNVERIFIED",
+    "retry_after": "bounded integer seconds when present"
+  },
+  "idempotency": {
+    "support": "CONTRACT_TESTED",
+    "scope": "one invoice create operation per Idempotency-Key"
+  },
+  "duplicate_guarantees": {
+    "classification": "CONTRACT_TESTED",
+    "identity": "invoice_id"
+  },
+  "write_acceptance": {
+    "classification": "CONTRACT_TESTED",
+    "accepted_statuses": [200, 201, 202]
+  },
+  "read_after_write": {
+    "consistency": "strong except explicit delayed_write fixture mode"
+  },
+  "maximum_safe_write_attempts": 2,
+  "evidence_classification": {
+    "overall": "TEST_FIXTURE_ONLY",
+    "rate_limits": "UNVERIFIED",
+    "authentication": "TEST_FIXTURE_ONLY"
+  },
+  "sha256": "1959dd9984fb93e1815c8a43ce9f041347f8b44fc6df7101202955f94ccd1096"
+}

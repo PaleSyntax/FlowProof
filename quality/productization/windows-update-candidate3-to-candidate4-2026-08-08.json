@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "evidence_scope": "EXTRACTED_CANDIDATE_TO_CANDIDATE_CURRENT_HOST_UPDATE",
+  "clean_machine_proof": false,
+  "source_checkout_used_for_runtime": false,
+  "from_artifact": {
+    "path": "dist/productization/FlowProof-Windows-x86_64-0.5.0-productization-candidate.3.zip",
+    "sha256": "7d46dc2905912c10619ce9badb02914021f06bc3a96f5cdb04bbb3c4ffcfcfc6"
+  },
+  "to_artifact": {
+    "path": "dist/productization/FlowProof-Windows-x86_64-0.5.0-productization-candidate.4.zip",
+    "sha256": "014ff3c8237240d53fdaffa48ca77f218e9facf90e81826091c813e03dcdbbd4"
+  },
+  "data_root": "C:/Temp/flowproof-update-runtime-2ffa1f68fc1340289076276a910eda6c",
+  "started_at": "2026-08-08T12:17:16.9835086Z",
+  "stages": [
+    {
+      "name": "source_candidate_install",
+      "status": "PASS",
+      "checked_at": "2026-08-08T12:17:57.6132032Z",
+      "evidence": {
+        "persisted_admin_count": 1,
+        "service_health": "READY",
+        "application_version": "0.5.0-productization-candidate.3"
+      }
+    },
+    {
+      "name": "failure_rollback",
+      "status": "PASS",
+      "checked_at": "2026-08-08T12:19:57.3250928Z",
+      "evidence": {
+        "application_version": "0.5.0-productization-candidate.3",
+        "persisted_admin_count": 1,
+        "previous_configuration_restored": true,
+        "service_health": "READY",
+        "injected_missing_image_reference": true,
+        "pre_update_backup_count": 1
+      }
+    },
+    {
+      "name": "backup_first_update",
+      "status": "PASS",
+      "checked_at": "2026-08-08T12:20:25.5841284Z",
+      "evidence": {
+        "persisted_admin_count_after": 1,
+        "service_health": "READY",
+        "persisted_admin_count_before": 1,
+        "backup_sidecars": true,
+        "from_version": "0.5.0-productization-candidate.3",
+        "to_version": "0.5.0-productization-candidate.4",
+        "data_preserved": true
+      }
+    },
+    {
+      "name": "same_version_rejected",
+      "status": "PASS",
+      "checked_at": "2026-08-08T12:20:25.5873551Z",
+      "evidence": { "rejected_before_mutation": true }
+    },
+    {
+      "name": "confirmed_cleanup",
+      "status": "PASS",
+      "checked_at": "2026-08-08T12:21:24.3937695Z",
+      "evidence": { "data_root_absent": true }
+    }
+  ],
+  "completed_at": "2026-08-08T12:21:24.4143594Z",
+  "duration_seconds": 247.432,
+  "verdict": "PASS"
+}

@@ -1,0 +1,3 @@
+{"timestamp":"2026-08-08T09:37:18.7469294Z","event":"orchestrator_started","stage":"initialize","detail":"probe_only=True"}
+{"timestamp":"2026-08-08T09:37:19.0233941Z","event":"probe_completed","stage":"elevated_probe","detail":"admin_token=[redacted]"}
+{"timestamp":"2026-08-08T09:37:19.0310368Z","event":"cleanup_completed","stage":"cleanup","detail":"user_created=False;staging_present=False"}

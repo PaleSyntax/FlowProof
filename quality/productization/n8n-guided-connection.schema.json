@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/n8n-guided-connection.schema.json",
+  "title": "FlowProof guided n8n connection qualification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "started_at",
+    "completed_at",
+    "n8n_version",
+    "evidence_classification",
+    "runtime_scope",
+    "source_checkout_used_for_runtime",
+    "artifact",
+    "real_n8n_execution_proven",
+    "real_provider_observation_proven",
+    "flowproof_connection",
+    "workflow_count",
+    "published_workflow_count",
+    "credential_count",
+    "public_api_exposed_credential_data",
+    "timeline_event_count",
+    "source_system",
+    "manual_flowproof_token_copying",
+    "n8n_api_key_persisted_by_flowproof",
+    "cleanup",
+    "result",
+    "blocker"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "completed_at": { "type": "string", "format": "date-time" },
+    "n8n_version": { "const": "2.30.5" },
+    "evidence_classification": { "const": "LOCAL_REAL_N8N_TEST_FIXTURE_ONLY" },
+    "runtime_scope": { "enum": ["SOURCE_WORKTREE_LOCAL_QUALIFICATION", "EXTRACTED_CANDIDATE_LOCAL_QUALIFICATION"] },
+    "source_checkout_used_for_runtime": { "type": "boolean" },
+    "artifact": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["filename", "sha256"],
+      "properties": {
+        "filename": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "real_n8n_execution_proven": { "type": "boolean" },
+    "real_provider_observation_proven": { "const": false },
+    "flowproof_connection": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["operation_id", "service_scopes", "workflow_ids", "api_key_persisted_by_flowproof", "manual_flowproof_token_copying"],
+      "properties": {
+        "operation_id": { "type": "string", "format": "uuid" },
+        "service_scopes": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "events:write" },
+            { "const": "recovery:execute" },
+            { "const": "recovery:verify" }
+          ],
+          "items": false
+        },
+        "workflow_ids": { "type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "api_key_persisted_by_flowproof": { "const": false },
+        "manual_flowproof_token_copying": { "const": false }
+      }
+    },
+    "workflow_count": { "type": ["integer", "null"], "minimum": 0 },
+    "published_workflow_count": { "type": ["integer", "null"], "minimum": 0 },
+    "credential_count": { "type": ["integer", "null"], "minimum": 0 },
+    "public_api_exposed_credential_data": { "type": ["boolean", "null"] },
+    "timeline_event_count": { "type": ["integer", "null"], "minimum": 0 },
+    "source_system": { "type": ["string", "null"] },
+    "manual_flowproof_token_copying": { "const": false },
+    "n8n_api_key_persisted_by_flowproof": { "const": false },
+    "cleanup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["appliance_data_deleted", "n8n_container_deleted", "n8n_volume_deleted"],
+      "properties": {
+        "appliance_data_deleted": { "type": "boolean" },
+        "n8n_container_deleted": { "type": "boolean" },
+        "n8n_volume_deleted": { "type": "boolean" }
+      }
+    },
+    "result": { "enum": ["PASS", "FAIL", "NOT_RUN"] },
+    "blocker": { "type": ["string", "null"] }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "result": { "const": "PASS" } }, "required": ["result"] },
+      "then": {
+        "properties": {
+          "real_n8n_execution_proven": { "const": true },
+          "flowproof_connection": { "type": "object" },
+          "workflow_count": { "const": 4 },
+          "published_workflow_count": { "const": 3 },
+          "credential_count": { "const": 1 },
+          "public_api_exposed_credential_data": { "const": false },
+          "timeline_event_count": { "type": "integer", "minimum": 2 },
+          "source_system": { "const": "n8n" },
+          "cleanup": {
+            "properties": {
+              "appliance_data_deleted": { "const": true },
+              "n8n_container_deleted": { "const": true },
+              "n8n_volume_deleted": { "const": true }
+            }
+          },
+          "blocker": { "type": "null" }
+        }
+      }
+    }
+  ]
+}

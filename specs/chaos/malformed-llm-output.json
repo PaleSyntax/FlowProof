@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "id": "malformed_llm_output",
+  "title": "Extraction produces invalid invoice structure",
+  "mock_mode": "normal",
+  "input_override": {
+    "amount": "eighteen thousand",
+    "currency": null
+  },
+  "expected": {
+    "registration_requested": false,
+    "event": "invoice.validation_failed",
+    "external_invoice_count": 0
+  }
+}

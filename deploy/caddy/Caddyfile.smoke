@@ -1,0 +1,55 @@
+{
+    auto_https disable_redirects
+    log {
+        output stdout
+        format json
+    }
+}
+
+http://{$FLOWPROOF_DOMAIN} {
+    redir https://{host}{uri} permanent
+}
+
+http://127.0.0.1 {
+    @local_proxy_health {
+        path /health/caddy-proxy
+        remote_ip 127.0.0.1 ::1
+    }
+    handle @local_proxy_health {
+        rewrite * /health/live
+        reverse_proxy api:8000
+    }
+    respond 404
+}
+
+# `caddy` is the private Docker DNS name used by the in-network session smoke.
+# It receives its own local-CA certificate; production serves only the domain.
+https://{$FLOWPROOF_DOMAIN}, https://caddy {
+    tls internal
+    encode zstd gzip
+
+    @metrics path /metrics
+    respond @metrics 403
+
+    handle_path /smoke/mock/* {
+        reverse_proxy mock-accounting:8001
+    }
+
+    @api path /api/* /docs* /openapi.json /health/*
+    handle @api {
+        reverse_proxy api:8000
+    }
+
+    @n8n_webhooks path /n8n/webhook/*
+    handle @n8n_webhooks {
+        uri strip_prefix /n8n
+        reverse_proxy n8n:5678
+    }
+
+    @n8n_private path /n8n/*
+    respond @n8n_private 404
+
+    handle {
+        reverse_proxy web:8080
+    }
+}

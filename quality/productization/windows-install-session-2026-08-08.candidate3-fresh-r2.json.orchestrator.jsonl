@@ -1,0 +1,8 @@
+{"timestamp":"2026-08-08T09:40:56.1699222Z","event":"orchestrator_started","stage":"initialize","detail":"probe_only=False"}
+{"timestamp":"2026-08-08T09:40:56.3394606Z","event":"credentials_prepared","stage":"prepare_credentials","detail":null}
+{"timestamp":"2026-08-08T09:40:56.4513407Z","event":"stage_started","stage":"stage_candidate","detail":null}
+{"timestamp":"2026-08-08T09:40:56.6085537Z","event":"stage_started","stage":"create_disposable_user","detail":null}
+{"timestamp":"2026-08-08T09:40:56.7705267Z","event":"stage_started","stage":"grant_docker_access","detail":null}
+{"timestamp":"2026-08-08T09:40:56.7926003Z","event":"stage_started","stage":"child_runner","detail":null}
+{"timestamp":"2026-08-08T09:41:23.6338123Z","event":"orchestrator_failed","stage":"child_runner","detail":"error_type=RuntimeException; message=The disposable-profile child runner failed with exit code 1."}
+{"timestamp":"2026-08-08T09:41:26.4914920Z","event":"cleanup_completed","stage":"cleanup","detail":"user_created=True;staging_present=False"}

@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "started_at": "2026-08-06T17:26:04.9067462Z",
+  "completed_at": "2026-08-06T17:26:57.7027429Z",
+  "n8n_version": "2.30.5",
+  "evidence_classification": "LOCAL_REAL_N8N_TEST_FIXTURE_ONLY",
+  "runtime_scope": "SOURCE_WORKTREE_LOCAL_QUALIFICATION",
+  "source_checkout_used_for_runtime": true,
+  "artifact": null,
+  "real_n8n_execution_proven": true,
+  "real_provider_observation_proven": false,
+  "flowproof_connection": {
+    "operation_id": "3f9cb832-3afd-4778-88ee-c8ecda954614",
+    "service_scopes": [
+      "events:write",
+      "recovery:execute",
+      "recovery:verify"
+    ],
+    "workflow_ids": [
+      "8aN773Et0CcJmZ29",
+      "G1O4djyivbz4gjlu",
+      "mXgIRBfjBTVjqtyu",
+      "LANU0v656HqoZYob"
+    ],
+    "api_key_persisted_by_flowproof": false,
+    "manual_flowproof_token_copying": false
+  },
+  "workflow_count": 4,
+  "published_workflow_count": 3,
+  "credential_count": 1,
+  "public_api_exposed_credential_data": false,
+  "timeline_event_count": 2,
+  "source_system": "n8n",
+  "manual_flowproof_token_copying": false,
+  "n8n_api_key_persisted_by_flowproof": false,
+  "cleanup": {
+    "appliance_data_deleted": true,
+    "n8n_container_deleted": true,
+    "n8n_volume_deleted": true
+  },
+  "result": "PASS",
+  "blocker": null
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FlowProof AI Incident Analysis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "summary",
+    "likely_causes",
+    "evidence_refs",
+    "uncertainties",
+    "unsafe_actions",
+    "operator_checks"
+  ],
+  "properties": {
+    "summary": {
+      "type": "string",
+      "maxLength": 1200
+    },
+    "likely_causes": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "cause",
+          "evidence_refs",
+          "confidence"
+        ],
+        "properties": {
+          "cause": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "confidence": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        }
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "unsafe_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "recommended_registered_action": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "operator_checks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

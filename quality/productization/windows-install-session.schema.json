@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/windows-install-session.schema.json",
+  "title": "FlowProof Windows install usability session",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "session_id",
+    "started_at",
+    "completed_at",
+    "tester_role",
+    "environment",
+    "artifact",
+    "metrics",
+    "stages",
+    "security",
+    "result",
+    "blocker"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "session_id": { "type": ["string", "null"], "format": "uuid" },
+    "started_at": { "type": ["string", "null"], "format": "date-time" },
+    "completed_at": { "type": ["string", "null"], "format": "date-time" },
+    "tester_role": { "type": ["string", "null"], "minLength": 1, "maxLength": 80 },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["windows_version", "architecture", "profile_type", "source_checkout_present", "preinstalled_tools"],
+      "properties": {
+        "windows_version": { "type": ["string", "null"], "minLength": 1, "maxLength": 120 },
+        "architecture": { "type": ["string", "null"], "enum": ["x86_64", "arm64", null] },
+        "profile_type": { "enum": ["windows_sandbox", "disposable_vm", "fresh_local_profile"] },
+        "source_checkout_present": { "type": "boolean" },
+        "preinstalled_tools": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 80 }, "uniqueItems": true }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filename", "sha256", "git_commit", "git_tree"],
+      "properties": {
+        "filename": { "type": ["string", "null"], "minLength": 1, "maxLength": 180 },
+        "sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "git_commit": { "type": ["string", "null"], "pattern": "^[0-9a-f]{40}$" },
+        "git_tree": { "type": ["string", "null"], "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["download_to_running_seconds", "running_to_first_demo_outcome_seconds", "mandatory_decision_count", "terminal_command_count", "manual_secret_handoff_count", "support_intervention_count", "install_failure_count"],
+      "properties": {
+        "download_to_running_seconds": { "type": ["integer", "null"], "minimum": 0 },
+        "running_to_first_demo_outcome_seconds": { "type": ["integer", "null"], "minimum": 0 },
+        "mandatory_decision_count": { "type": ["integer", "null"], "minimum": 0 },
+        "terminal_command_count": { "type": ["integer", "null"], "minimum": 0 },
+        "manual_secret_handoff_count": { "type": ["integer", "null"], "minimum": 0 },
+        "support_intervention_count": { "type": ["integer", "null"], "minimum": 0 },
+        "install_failure_count": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "stages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prerequisite_check", "install", "first_open", "safe_demo", "restart_reopen", "diagnostics_export", "backup", "uninstall_preserve", "reinstall_retention"],
+      "properties": {
+        "prerequisite_check": { "$ref": "#/$defs/stage" },
+        "install": { "$ref": "#/$defs/stage" },
+        "first_open": { "$ref": "#/$defs/stage" },
+        "safe_demo": { "$ref": "#/$defs/stage" },
+        "restart_reopen": { "$ref": "#/$defs/stage" },
+        "diagnostics_export": { "$ref": "#/$defs/stage" },
+        "backup": { "$ref": "#/$defs/stage" },
+        "uninstall_preserve": { "$ref": "#/$defs/stage" },
+        "reinstall_retention": { "$ref": "#/$defs/stage" }
+      }
+    },
+    "security": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["credentials_in_artifact", "env_file_in_artifact", "database_in_artifact", "raw_customer_data_in_artifact"],
+      "properties": {
+        "credentials_in_artifact": { "type": ["boolean", "null"] },
+        "env_file_in_artifact": { "type": ["boolean", "null"] },
+        "database_in_artifact": { "type": ["boolean", "null"] },
+        "raw_customer_data_in_artifact": { "type": ["boolean", "null"] }
+      }
+    },
+    "result": { "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN"] },
+    "blocker": { "type": ["string", "null"], "minLength": 1, "maxLength": 500 }
+  },
+  "$defs": {
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence", "note"],
+      "properties": {
+        "status": { "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN"] },
+        "evidence": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 300 }, "uniqueItems": true },
+        "note": { "type": ["string", "null"], "minLength": 1, "maxLength": 500 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "PASS" } }, "required": ["status"] },
+          "then": { "properties": { "evidence": { "minItems": 1 } } }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "result": { "const": "PASS" } }, "required": ["result"] },
+      "then": {
+        "properties": {
+          "session_id": { "type": "string" },
+          "started_at": { "type": "string" },
+          "completed_at": { "type": "string" },
+          "tester_role": { "type": "string" },
+          "environment": { "properties": { "windows_version": { "type": "string" }, "architecture": { "type": "string" }, "source_checkout_present": { "const": false } } },
+          "artifact": { "properties": { "filename": { "type": "string" }, "sha256": { "type": "string" }, "git_commit": { "type": "string" }, "git_tree": { "type": "string" } } },
+          "metrics": {
+            "properties": {
+              "download_to_running_seconds": { "type": "integer" },
+              "running_to_first_demo_outcome_seconds": { "type": "integer", "maximum": 900 },
+              "mandatory_decision_count": { "type": "integer", "maximum": 7 },
+              "terminal_command_count": { "const": 0 },
+              "manual_secret_handoff_count": { "const": 0 },
+              "support_intervention_count": { "type": "integer" },
+              "install_failure_count": { "const": 0 }
+            }
+          },
+          "stages": {
+            "properties": {
+              "prerequisite_check": { "properties": { "status": { "const": "PASS" } } },
+              "install": { "properties": { "status": { "const": "PASS" } } },
+              "first_open": { "properties": { "status": { "const": "PASS" } } },
+              "safe_demo": { "properties": { "status": { "const": "PASS" } } },
+              "restart_reopen": { "properties": { "status": { "const": "PASS" } } },
+              "diagnostics_export": { "properties": { "status": { "const": "PASS" } } },
+              "backup": { "properties": { "status": { "const": "PASS" } } },
+              "uninstall_preserve": { "properties": { "status": { "const": "PASS" } } },
+              "reinstall_retention": { "properties": { "status": { "const": "PASS" } } }
+            }
+          },
+          "security": {
+            "properties": {
+              "credentials_in_artifact": { "const": false },
+              "env_file_in_artifact": { "const": false },
+              "database_in_artifact": { "const": false },
+              "raw_customer_data_in_artifact": { "const": false }
+            }
+          },
+          "blocker": { "type": "null" }
+        }
+      }
+    }
+  ]
+}

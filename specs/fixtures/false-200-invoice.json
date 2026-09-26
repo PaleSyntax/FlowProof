@@ -1,0 +1,11 @@
+{
+  "delivery_id": "delivery-false-200-001",
+  "correlation_id": "order-false-200-001",
+  "invoice": {
+    "invoice_id": "INV-DEMO-002",
+    "supplier": "Demo Supplier",
+    "amount": 18900.0,
+    "currency": "RUB",
+    "approved": true
+  }
+}

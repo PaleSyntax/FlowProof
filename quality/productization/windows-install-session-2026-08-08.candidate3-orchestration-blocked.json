@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "session_id": "ae742d66-b611-4f7a-ac98-b9fe232f03ae",
+  "started_at": null,
+  "completed_at": null,
+  "tester_role": "Codex parent-process observation of disposable local Windows profile harness",
+  "environment": {
+    "windows_version": "Windows 10.0.22631.0",
+    "architecture": "x86_64",
+    "profile_type": "fresh_local_profile",
+    "source_checkout_present": false,
+    "preinstalled_tools": [
+      "Docker Desktop"
+    ]
+  },
+  "artifact": {
+    "filename": "FlowProof-Windows-x86_64-0.5.0-productization-candidate.3.zip",
+    "sha256": "7d46dc2905912c10619ce9badb02914021f06bc3a96f5cdb04bbb3c4ffcfcfc6",
+    "git_commit": "da9057ac21be3fa7ac7e88d19bca9abc509abac9",
+    "git_tree": "f88908bf75dcd336e2df33a2907c6a53c313725d"
+  },
+  "metrics": {
+    "download_to_running_seconds": null,
+    "running_to_first_demo_outcome_seconds": null,
+    "mandatory_decision_count": null,
+    "terminal_command_count": 0,
+    "manual_secret_handoff_count": 0,
+    "support_intervention_count": 0,
+    "install_failure_count": 1
+  },
+  "stages": {
+    "prerequisite_check": {
+      "status": "BLOCKED",
+      "evidence": [
+        "UAC elevation was accepted and the elevated PowerShell process started",
+        "elevated_process_exit_code=1",
+        "parent_observed_duration_seconds=14.778",
+        "runner_result_json_present=false",
+        "post_attempt_users=0 profiles=0 public_staging=0 containers=0 volumes=0 networks=0"
+      ],
+      "note": "The elevated process exited before returning child-runner evidence; no install or usability result can be inferred."
+    },
+    "install": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "first_open": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "safe_demo": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "restart_reopen": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "diagnostics_export": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "backup": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "uninstall_preserve": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "reinstall_retention": { "status": "NOT_RUN", "evidence": [], "note": null }
+  },
+  "security": {
+    "credentials_in_artifact": false,
+    "env_file_in_artifact": false,
+    "database_in_artifact": false,
+    "raw_customer_data_in_artifact": false
+  },
+  "result": "BLOCKED",
+  "blocker": "FRESH_LOCAL_PROFILE_ELEVATED_PROCESS_EXIT_1_NO_EVIDENCE: use a visible elevated console with captured sanitized error output, or provide a disposable Windows 11 VM."
+}

@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "pack_id": "invoice-accounting",
+  "version": "0.1.0",
+  "vertical": "invoice-accounting-outcome-assurance",
+  "positioning": "Outcome assurance for a business-critical n8n invoice registration workflow.",
+  "status": "LOCAL_PACK_READY_PROVIDER_BLOCKED",
+  "default_mode": "observe_only",
+  "provider_gate": {
+    "selection_status": "OWNER_AUTHORIZED_PROVIDER_ACCESS_REQUIRED",
+    "allowed_environments": ["sandbox", "partner_test"],
+    "contract_schema": "specs/providers/provider-contract.schema.json",
+    "explicit_adapter_registration_required": true,
+    "credential_material_allowed_in_pack": false,
+    "live_evidence_available": false
+  },
+  "event_contract": {
+    "schema": "specs/events/business-event.schema.json",
+    "entity_type": "invoice",
+    "events": [
+      "invoice.validated",
+      "invoice.approved",
+      "invoice.registration_requested",
+      "invoice.registration_acknowledged"
+    ],
+    "payload_allowlist": ["amount", "currency"]
+  },
+  "correlation_contract": {
+    "entity_id": "The exact invoice identifier used by the authoritative provider read.",
+    "correlation_id": "One stable business-process identifier preserved across n8n retries and nodes.",
+    "idempotency_key": "A unique delivery key composed from workflow, event type, entity ID, and stable delivery ID.",
+    "retry_rule": "A retry reuses correlation_id and entity_id but must not reuse an idempotency key for different content."
+  },
+  "invariants": [
+    {"id": "approval_before_registration", "type": "ordering", "deterministic": true, "recovery_action": null},
+    {"id": "registration_ack_exactly_once", "type": "exactly_once", "deterministic": true, "recovery_action": null},
+    {"id": "external_invoice_exists", "type": "external_assertion", "deterministic": true, "recovery_action": null},
+    {"id": "process_completes", "type": "eventually", "deterministic": true, "recovery_action": null},
+    {"id": "validated_amount_matches_registered_amount", "type": "value_matches", "deterministic": true, "recovery_action": null}
+  ],
+  "authoritative_read": {
+    "entity": "invoice",
+    "method": "GET",
+    "projection": ["invoice_id", "id", "amount", "currency", "status"],
+    "allowed_mutation_methods": [],
+    "unavailable_is_pass": false
+  },
+  "incident": {
+    "headline": "n8n accepted the workflow path, but the authoritative accounting outcome is missing, duplicated, late, or mismatched.",
+    "reason_codes": [
+      "missing_external_invoice",
+      "external_invoice_not_unique",
+      "external_invoice_identity_mismatch",
+      "external_amount_mismatch",
+      "external_currency_mismatch",
+      "external_verifier_unavailable"
+    ],
+    "deduplication_scope": "correlation_id+invariant_id"
+  },
+  "evidence_projection": {
+    "allowed_fields": [
+      "classification",
+      "provider_id",
+      "environment",
+      "adapter_version",
+      "entity_reference",
+      "observed_at",
+      "presence_count",
+      "records.invoice_id",
+      "records.id",
+      "records.amount",
+      "records.currency",
+      "records.status",
+      "operation_reference",
+      "retry_after_seconds",
+      "error_code"
+    ],
+    "forbidden_fields": ["credential", "token", "password", "cookie", "authorization", "raw_payload"],
+    "content_digest_required": true
+  },
+  "operator_playbook": [
+    "Confirm the owner authorization, provider contract digest, sandbox environment, and exact safe invoice entity.",
+    "Confirm FlowProof recovery writes are disabled before the observation begins.",
+    "Trigger or select one already-authorized n8n invoice lifecycle and preserve its stable correlation ID.",
+    "Run the authoritative read once through the explicitly registered provider adapter.",
+    "Review the deterministic invariant result and bounded evidence; never treat verifier unavailability as PASS.",
+    "Record the named operator review and verify that the provider mutation count is zero."
+  ],
+  "recovery_boundary": {
+    "enabled": false,
+    "write_authority_included": false,
+    "enablement_requirements": [
+      "separate owner authorization immediately before the bounded write",
+      "provider idempotency and duplicate semantics contract-tested in the authorized sandbox",
+      "exact entity, amount, currency, TTL, and maximum-attempt guardrails",
+      "failure-state setup plus rollback or cleanup coordinates",
+      "independent precondition and postcondition authoritative reads"
+    ]
+  },
+  "assets": {
+    "policy": "specs/outcome-packs/invoice-accounting/policy.observe-only.yaml",
+    "event_template": "specs/outcome-packs/invoice-accounting/registration-acknowledged.event.json",
+    "provider_access_request": "quality/productization/provider-access-request.xero-demo.template.json",
+    "lifecycle_evidence_schema": "quality/productization/observe-only-provider-lifecycle.schema.json",
+    "operator_guide": "docs/productization/INVOICE_ACCOUNTING_OUTCOME_PACK.md"
+  }
+}

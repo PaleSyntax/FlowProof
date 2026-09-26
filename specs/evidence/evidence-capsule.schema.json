@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/evidence-capsule.schema.json",
+  "title": "FlowProof deterministic evidence capsule v1.1 manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "proof_type",
+    "package_version",
+    "git_commit",
+    "git_tree",
+    "migration_head",
+    "evidence_classification",
+    "incident_id",
+    "correlation_id",
+    "policy_name",
+    "policy_version",
+    "policy_hash",
+    "provider_contract_digest",
+    "files",
+    "review_subject_sha256",
+    "review_subject_digest_scope",
+    "bundle_sha256",
+    "bundle_digest_scope"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.1"
+    },
+    "proof_type": {
+      "enum": [
+        "pre_dispatch_review",
+        "durable_nonterminal_checkpoint",
+        "external_resolution_without_provider_write",
+        "fenced_provider_write_and_authoritative_reread"
+      ]
+    },
+    "package_version": {
+      "const": "0.6.0"
+    },
+    "git_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "git_tree": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "migration_head": {
+      "const": "0010_release_groundwork_fencing"
+    },
+    "evidence_classification": {
+      "const": "IMPLEMENTED_UNVERIFIED"
+    },
+    "incident_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "policy_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "policy_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "policy_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "provider_contract_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "files": {
+      "type": "array",
+      "minItems": 13,
+      "maxItems": 13,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "size",
+          "sha256"
+        ],
+        "properties": {
+          "name": {
+            "enum": [
+              "release-coordinates.json",
+              "provider-contract.json",
+              "policy.json",
+              "incident.json",
+              "evaluations.json",
+              "timeline-evidence.json",
+              "recovery-plan.json",
+              "recovery-decisions.json",
+              "recovery-attempts.json",
+              "transport-invocations.json",
+              "postcondition-observations.json",
+              "audit-references.json",
+              "operator-review.json"
+            ]
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "review_subject_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "review_subject_digest_scope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "bundle_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "bundle_digest_scope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    }
+  }
+}

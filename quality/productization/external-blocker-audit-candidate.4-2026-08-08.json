@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "collected_at": "2026-08-08T12:52:28.1913623Z",
+  "evidence_scope": "READ_ONLY_EXTERNAL_BLOCKER_RECONFIRMATION",
+  "mutating_actions_performed": false,
+  "candidate": {
+    "filename": "FlowProof-Windows-x86_64-0.5.0-productization-candidate.4.zip",
+    "bytes": 262575496,
+    "expected_sha256": "014ff3c8237240d53fdaffa48ca77f218e9facf90e81826091c813e03dcdbbd4",
+    "observed_sha256": "014ff3c8237240d53fdaffa48ca77f218e9facf90e81826091c813e03dcdbbd4",
+    "sha256_match": true
+  },
+  "xero_demo": {
+    "public_client_id_available_in_process_environment": false,
+    "owner_consent_evidence_present": false,
+    "completed_live_provider_lifecycle_evidence_present": false,
+    "provider_mutation_attempted": false,
+    "status": "BLOCKED_EXTERNAL",
+    "required_next_action": "Provide a public Xero native-app Client ID, complete owner-authorized browser PKCE consent against one active Demo Company, supply one safe invoice expectation, and complete named-operator review."
+  },
+  "fresh_windows": {
+    "same_user_windows_11_vm_evidence_present": false,
+    "fresh_interactive_tester_evidence_present": false,
+    "supported_windows_install_media_found_in_standard_user_locations": false,
+    "non_windows_iso_ignored": true,
+    "prior_cross_user_blocker_evidence": "windows-install-session-2026-08-08.candidate3-cross-user-blocked.json",
+    "status": "BLOCKED_ENVIRONMENT",
+    "required_next_action": "Provide or authorize official Windows 11 installation media for a disposable same-user VM, or run the candidate under a fresh interactive tester account whose Docker Desktop process uses that same account."
+  },
+  "publication": {
+    "publication_authorized": false,
+    "merge_performed": false,
+    "tag_performed": false,
+    "release_performed": false,
+    "deploy_performed": false,
+    "status": "BLOCKED_EXTERNAL"
+  },
+  "result": "BLOCKED_EXTERNAL",
+  "goal_achieved": false
+}

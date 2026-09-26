@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/provider-contract.schema.json",
+  "title": "FlowProof bounded invoice provider contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "provider_id",
+    "adapter_version",
+    "environment",
+    "contract_version",
+    "sandbox_only",
+    "authoritative_read",
+    "authentication",
+    "rate_limits",
+    "idempotency",
+    "duplicate_guarantees",
+    "write_acceptance",
+    "read_after_write",
+    "maximum_safe_write_attempts",
+    "evidence_classification",
+    "sha256"
+  ],
+  "properties": {
+    "provider_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+    "adapter_version": {"type": "string", "minLength": 1, "maxLength": 64},
+    "environment": {"enum": ["sandbox", "partner_test"]},
+    "contract_version": {"type": "string", "minLength": 1, "maxLength": 64},
+    "sandbox_only": {"const": true},
+    "authoritative_read": {"type": "object", "additionalProperties": true},
+    "authentication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "credential_reference"],
+      "properties": {
+        "mode": {"type": "string", "minLength": 1},
+        "credential_reference": {
+          "type": "string",
+          "pattern": "^(not-applicable|(?:env|file|docker-secret|vault|aws-secrets-manager|gcp-secret-manager|azure-key-vault):[A-Za-z0-9][A-Za-z0-9._/@:-]{0,254})$"
+        }
+      },
+      "allOf": [{
+        "if": {"properties": {"mode": {"pattern": "^(?:none|oauth2-pkce)"}}, "required": ["mode"]},
+        "then": {"properties": {"credential_reference": {"const": "not-applicable"}}},
+        "else": {"properties": {"credential_reference": {
+          "pattern": "^(?:env|file|docker-secret|vault|aws-secrets-manager|gcp-secret-manager|azure-key-vault):[A-Za-z0-9][A-Za-z0-9._/@:-]{0,254}$"
+        }}}
+      }]
+    },
+    "rate_limits": {"type": "object", "additionalProperties": true},
+    "idempotency": {"type": "object", "additionalProperties": true},
+    "duplicate_guarantees": {"type": "object", "additionalProperties": true},
+    "write_acceptance": {"type": "object", "additionalProperties": true},
+    "read_after_write": {"type": "object", "additionalProperties": true},
+    "maximum_safe_write_attempts": {"type": "integer", "minimum": 1, "maximum": 3},
+    "evidence_classification": {
+      "type": "object",
+      "additionalProperties": {"enum": [
+        "DOCUMENTED",
+        "CONTRACT_TESTED",
+        "LIVE_SANDBOX_OBSERVED",
+        "UNVERIFIED",
+        "TEST_FIXTURE_ONLY"
+      ]}
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

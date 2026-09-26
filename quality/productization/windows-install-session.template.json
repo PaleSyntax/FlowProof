@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "session_id": null,
+  "started_at": null,
+  "completed_at": null,
+  "tester_role": null,
+  "environment": {
+    "windows_version": null,
+    "architecture": null,
+    "profile_type": "windows_sandbox",
+    "source_checkout_present": false,
+    "preinstalled_tools": []
+  },
+  "artifact": {
+    "filename": null,
+    "sha256": null,
+    "git_commit": null,
+    "git_tree": null
+  },
+  "metrics": {
+    "download_to_running_seconds": null,
+    "running_to_first_demo_outcome_seconds": null,
+    "mandatory_decision_count": null,
+    "terminal_command_count": null,
+    "manual_secret_handoff_count": null,
+    "support_intervention_count": null,
+    "install_failure_count": null
+  },
+  "stages": {
+    "prerequisite_check": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "install": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "first_open": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "safe_demo": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "restart_reopen": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "diagnostics_export": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "backup": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "uninstall_preserve": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "reinstall_retention": { "status": "NOT_RUN", "evidence": [], "note": null }
+  },
+  "security": {
+    "credentials_in_artifact": null,
+    "env_file_in_artifact": null,
+    "database_in_artifact": null,
+    "raw_customer_data_in_artifact": null
+  },
+  "result": "NOT_RUN",
+  "blocker": null
+}

@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "evidence_scope": "EXTRACTED_CANDIDATE_TO_CANDIDATE_CURRENT_HOST_UPDATE",
+  "clean_machine_proof": false,
+  "source_checkout_used_for_runtime": false,
+  "from_artifact": {
+    "path": "dist/productization/FlowProof-Windows-x86_64-0.5.0-productization-candidate.2.zip",
+    "sha256": "00454dc55b27e8a05b2264733cf09ff0918d8a79df4490fb909386ee71675ac1"
+  },
+  "to_artifact": {
+    "path": "dist/productization/FlowProof-Windows-x86_64-0.5.0-productization-candidate.3.zip",
+    "sha256": "7d46dc2905912c10619ce9badb02914021f06bc3a96f5cdb04bbb3c4ffcfcfc6"
+  },
+  "data_root": "C:/Temp/flowproof-update-runtime-759b86c214c1488aafaa94866314ccb9",
+  "started_at": "2026-08-06T18:33:03.5379628Z",
+  "stages": [
+    {
+      "name": "source_candidate_install",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:33:35.9179906Z",
+      "evidence": {
+        "persisted_admin_count": 1,
+        "service_health": "READY",
+        "application_version": "0.5.0-productization-candidate.2"
+      }
+    },
+    {
+      "name": "failure_rollback",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:34:00.4240375Z",
+      "evidence": {
+        "application_version": "0.5.0-productization-candidate.2",
+        "persisted_admin_count": 1,
+        "previous_configuration_restored": true,
+        "service_health": "READY",
+        "injected_missing_image_reference": true,
+        "pre_update_backup_count": 1
+      }
+    },
+    {
+      "name": "backup_first_update",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:34:52.1079161Z",
+      "evidence": {
+        "persisted_admin_count_after": 1,
+        "service_health": "READY",
+        "persisted_admin_count_before": 1,
+        "backup_sidecars": true,
+        "backup": "C:/Temp/flowproof-update-runtime-759b86c214c1488aafaa94866314ccb9/backups/flowproof-20260806T183401Z.dump",
+        "from_version": "0.5.0-productization-candidate.2",
+        "to_version": "0.5.0-productization-candidate.3",
+        "data_preserved": true
+      }
+    },
+    {
+      "name": "same_version_rejected",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:34:52.1127663Z",
+      "evidence": { "rejected_before_mutation": true }
+    },
+    {
+      "name": "confirmed_cleanup",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:35:19.0793651Z",
+      "evidence": { "data_root_absent": true }
+    }
+  ],
+  "completed_at": "2026-08-06T18:35:19.1656026Z",
+  "duration_seconds": 135.629,
+  "verdict": "PASS"
+}

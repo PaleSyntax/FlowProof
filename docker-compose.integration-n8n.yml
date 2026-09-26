@@ -1,0 +1,46 @@
+# Optional, environment-owned n8n integration profile. It is never part of the
+# supported FlowProof production core and deliberately publishes no host port.
+services:
+  n8n:
+    image: n8nio/n8n:2.30.5@sha256:450853cd21a2ce36587c4c860eb26927c1ceba9496bf55f4c213b5d3a6dc8c6f
+    profiles: ["n8n"]
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - >-
+        export N8N_ENCRYPTION_KEY="$$(cat /run/secrets/n8n_encryption_key)";
+        exec /docker-entrypoint.sh
+    environment:
+      N8N_HOST: ${FLOWPROOF_N8N_HOST:?FLOWPROOF_N8N_HOST is required}
+      N8N_PROTOCOL: ${FLOWPROOF_N8N_PROTOCOL:-https}
+      N8N_EDITOR_BASE_URL: ${FLOWPROOF_N8N_EDITOR_BASE_URL:?FLOWPROOF_N8N_EDITOR_BASE_URL is required}
+      WEBHOOK_URL: ${FLOWPROOF_N8N_WEBHOOK_URL:?FLOWPROOF_N8N_WEBHOOK_URL is required}
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "true"
+    secrets:
+      - n8n_encryption_key
+    volumes:
+      - n8n-integration-data:/home/node/.n8n
+    networks:
+      - application
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+      - /home/node/.cache:rw,noexec,nosuid,size=64m,uid=1000,gid=1000,mode=0700
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:5678/healthz').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  n8n-integration-data:
+
+secrets:
+  n8n_encryption_key:
+    file: ${FLOWPROOF_N8N_SECRETS_DIR:?FLOWPROOF_N8N_SECRETS_DIR is required}/n8n_encryption_key

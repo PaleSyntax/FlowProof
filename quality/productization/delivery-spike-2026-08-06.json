@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "classification": "PASS_FEASIBILITY_NOT_CLEAN_INSTALL_PROOF",
+  "host": {
+    "windows_build": "22631.6060",
+    "powershell": "5.1.22621.6060",
+    "wsl_version": 2
+  },
+  "controller_capabilities": {
+    "wpf_window": true,
+    "notify_icon": true,
+    "secure_rng": true,
+    "wscript_shell": true
+  },
+  "container_runtime": {
+    "docker_desktop": "4.83.0",
+    "docker_engine": "29.6.2",
+    "docker_compose": "5.3.1",
+    "os": "linux",
+    "architecture": "x86_64",
+    "current_compose_render": "PASS"
+  },
+  "selected_data_folder_spike": {
+    "image": "postgres:16-alpine",
+    "attempt_1": "INCONCLUSIVE_HEALTH_WINDOW_TOO_SHORT",
+    "attempt_2": "PASS",
+    "health": "healthy",
+    "select_1": "1",
+    "windows_data_members_observed": 24,
+    "temporary_container_removed": true,
+    "temporary_directory_removed": true
+  },
+  "boundaries": [
+    "Current host feasibility only",
+    "Not a fresh-machine install",
+    "No FlowProof service was started or stopped",
+    "No code-signing or SmartScreen acceptance was proven",
+    "No asset cold-start duration was measured"
+  ]
+}

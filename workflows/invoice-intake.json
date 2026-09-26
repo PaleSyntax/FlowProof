@@ -1,0 +1,154 @@
+{
+  "name": "FlowProof Invoice Intake",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "invoice-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Invoice intake webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "webhookId": "4d8bea12-0cce-4ce0-86c8-68f51c061001",
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json.body ?? $input.first().json;\nconst invoice = input.invoice;\nif (!input.delivery_id || !input.correlation_id || !invoice?.invoice_id || typeof invoice.amount !== 'number' || invoice.amount <= 0 || !invoice.currency) throw new Error('Invalid invoice intake');\nif (Object.hasOwn(invoice, 'approved')) throw new Error('Approval must be submitted to invoice-approve, not invoice-intake');\nreturn [{ json: { delivery_id: input.delivery_id, correlation_id: input.correlation_id, invoice, idempotency_prefix: `invoice:${invoice.invoice_id}:${input.delivery_id}` } }];"
+      },
+      "name": "Normalize invoice input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/v1/events",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { idempotency_key: $('Normalize invoice input').first().json.idempotency_prefix + ':received', correlation_id: $('Normalize invoice input').first().json.correlation_id, entity_type: 'invoice', entity_id: $('Normalize invoice input').first().json.invoice.invoice_id, event_type: 'invoice.received', occurred_at: $now.toISO(), source: { system: 'n8n', workflow_id: 'invoice-intake', execution_id: $execution.id, node_name: 'Emit invoice.received' }, payload: { amount: $('Normalize invoice input').first().json.invoice.amount, currency: $('Normalize invoice input').first().json.invoice.currency } } }}",
+        "options": {
+          "timeout": 5000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "name": "Emit invoice.received",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "FlowProof API service account",
+          "id": "flowproof-api-service-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/v1/events",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { idempotency_key: $('Normalize invoice input').first().json.idempotency_prefix + ':validated', correlation_id: $('Normalize invoice input').first().json.correlation_id, entity_type: 'invoice', entity_id: $('Normalize invoice input').first().json.invoice.invoice_id, event_type: 'invoice.validated', occurred_at: $now.toISO(), source: { system: 'n8n', workflow_id: 'invoice-intake', execution_id: $execution.id, node_name: 'Emit invoice.validated' }, payload: { amount: $('Normalize invoice input').first().json.invoice.amount, currency: $('Normalize invoice input').first().json.invoice.currency } } }}",
+        "options": {
+          "timeout": 5000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "name": "Emit invoice.validated",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "FlowProof API service account",
+          "id": "flowproof-api-service-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { correlation_id: $('Normalize invoice input').first().json.correlation_id, invoice_id: $('Normalize invoice input').first().json.invoice.invoice_id, status: 'pending_approval', approval_webhook: '/webhook/invoice-approve' } }}",
+        "options": {}
+      },
+      "name": "Return pending approval",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        940,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Invoice intake webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize invoice input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize invoice input": {
+      "main": [
+        [
+          {
+            "node": "Emit invoice.received",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emit invoice.received": {
+      "main": [
+        [
+          {
+            "node": "Emit invoice.validated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emit invoice.validated": {
+      "main": [
+        [
+          {
+            "node": "Return pending approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "id": "flowproof-invoice-intake"
+}

@@ -1,0 +1,53 @@
+# Local-only overlay. It builds tagged local images and introduces the Mock Accounting test double.
+services:
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      args:
+        VERSION: "0.6.0"
+        REVISION: local-production-smoke
+  scheduler:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      args:
+        VERSION: "0.6.0"
+        REVISION: local-production-smoke
+  migrate:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      args:
+        VERSION: "0.6.0"
+        REVISION: local-production-smoke
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VERSION: "0.6.0"
+        REVISION: local-production-smoke
+  mock-accounting:
+    image: ${FLOWPROOF_MOCK_IMAGE:?FLOWPROOF_MOCK_IMAGE is required}
+    build:
+      context: ./mock-accounting
+      dockerfile: Dockerfile
+      args:
+        VERSION: "0.6.0"
+        REVISION: local-production-smoke
+    networks:
+      - application
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 6

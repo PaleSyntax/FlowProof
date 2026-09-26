@@ -1,0 +1,1744 @@
+openapi: 3.1.0
+info:
+  title: FlowProof API
+  version: 0.6.0
+paths:
+  /health/live:
+    get:
+      tags:
+      - health
+      summary: Health Live
+      operationId: health_live_health_live_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Health Live Health Live Get
+  /health/ready:
+    get:
+      tags:
+      - health
+      summary: Health Ready
+      operationId: health_ready_health_ready_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/operations/alerts/test:
+    post:
+      tags:
+      - operations
+      summary: Send Test Alert
+      operationId: send_test_alert_api_v1_operations_alerts_test_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Send Test Alert Api V1 Operations Alerts Test Post
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/auth/login:
+    post:
+      tags:
+      - auth
+      summary: Login
+      operationId: login_api_v1_auth_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Login Api V1 Auth Login Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/logout:
+    post:
+      tags:
+      - auth
+      summary: Logout
+      operationId: logout_api_v1_auth_logout_post
+      responses:
+        '204':
+          description: Successful Response
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/auth/me:
+    get:
+      tags:
+      - auth
+      summary: Me
+      operationId: me_api_v1_auth_me_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Me Api V1 Auth Me Get
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/events:
+    post:
+      tags:
+      - events
+      summary: Ingest Event
+      operationId: ingest_event_api_v1_events_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessEventIn'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventReceipt'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/entities/{entity_type}/{entity_id}/timeline:
+    get:
+      tags:
+      - entities
+      summary: Entity Timeline
+      operationId: entity_timeline_api_v1_entities__entity_type___entity_id__timeline_get
+      parameters:
+      - name: entity_type
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Entity Type
+      - name: entity_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Entity Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Entity Timeline Api V1 Entities  Entity Type   Entity
+                  Id  Timeline Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/correlations/{correlation_id}/evaluate:
+    post:
+      tags:
+      - evaluation
+      summary: Evaluate Correlation
+      operationId: evaluate_correlation_api_v1_correlations__correlation_id__evaluate_post
+      parameters:
+      - name: correlation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Correlation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Evaluate Correlation Api V1 Correlations  Correlation
+                  Id  Evaluate Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/deadline-jobs:
+    get:
+      tags:
+      - scheduler
+      summary: List Deadline Jobs
+      operationId: list_deadline_jobs_api_v1_deadline_jobs_get
+      parameters:
+      - name: state
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: State
+      - name: correlation_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Correlation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Deadline Jobs Api V1 Deadline Jobs Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/deadline-jobs/{job_id}:
+    get:
+      tags:
+      - scheduler
+      summary: Deadline Job Detail
+      operationId: deadline_job_detail_api_v1_deadline_jobs__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Deadline Job Detail Api V1 Deadline Jobs  Job Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/incidents:
+    get:
+      tags:
+      - incidents
+      summary: List Incidents
+      operationId: list_incidents_api_v1_incidents_get
+      parameters:
+      - name: status_filter
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status Filter
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Incidents Api V1 Incidents Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/incidents/{incident_id}:
+    get:
+      tags:
+      - incidents
+      summary: Incident Detail
+      operationId: incident_detail_api_v1_incidents__incident_id__get
+      parameters:
+      - name: incident_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Incident Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Incident Detail Api V1 Incidents  Incident Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/blast-radius:
+    get:
+      tags:
+      - incidents
+      summary: Blast Radius
+      operationId: blast_radius_api_v1_blast_radius_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Blast Radius Api V1 Blast Radius Get
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/policies:
+    get:
+      tags:
+      - policies
+      summary: Active Policies
+      operationId: active_policies_api_v1_policies_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Active Policies Api V1 Policies Get
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/recovery-plans/{plan_id}:
+    get:
+      tags:
+      - recovery
+      summary: Recovery Plan
+      operationId: recovery_plan_api_v1_recovery_plans__plan_id__get
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Plan Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Recovery Plan Api V1 Recovery Plans  Plan Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/recovery-plans/{plan_id}/approve:
+    post:
+      tags:
+      - recovery
+      summary: Approve Recovery
+      operationId: approve_recovery_api_v1_recovery_plans__plan_id__approve_post
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Plan Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Approve Recovery Api V1 Recovery Plans  Plan Id  Approve
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/recovery-plans/{plan_id}/reject:
+    post:
+      tags:
+      - recovery
+      summary: Reject Recovery
+      operationId: reject_recovery_api_v1_recovery_plans__plan_id__reject_post
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Plan Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoveryDecisionIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Reject Recovery Api V1 Recovery Plans  Plan Id  Reject
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/recovery-plans/{plan_id}/revoke-approval:
+    post:
+      tags:
+      - recovery
+      summary: Revoke Recovery Approval
+      operationId: revoke_recovery_approval_api_v1_recovery_plans__plan_id__revoke_approval_post
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Plan Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoveryDecisionIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Revoke Recovery Approval Api V1 Recovery Plans  Plan
+                  Id  Revoke Approval Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/recovery-plans/{plan_id}/reconcile:
+    post:
+      tags:
+      - recovery
+      summary: Reconcile Recovery
+      operationId: reconcile_recovery_api_v1_recovery_plans__plan_id__reconcile_post
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Plan Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReconcileIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Reconcile Recovery Api V1 Recovery Plans  Plan Id  Reconcile
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/recovery-plans/{plan_id}/attempts:
+    get:
+      tags:
+      - recovery
+      summary: Recovery Attempts
+      operationId: recovery_attempts_api_v1_recovery_plans__plan_id__attempts_get
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Plan Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Recovery Attempts Api V1 Recovery Plans  Plan Id  Attempts
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/recovery-plans/{plan_id}/decisions:
+    get:
+      tags:
+      - recovery
+      summary: Recovery Decisions
+      operationId: recovery_decisions_api_v1_recovery_plans__plan_id__decisions_get
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Plan Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Recovery Decisions Api V1 Recovery Plans  Plan Id  Decisions
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/recovery-plans/{plan_id}/operator-review:
+    post:
+      tags:
+      - recovery
+      summary: Record Operator Review
+      operationId: record_operator_review_api_v1_recovery_plans__plan_id__operator_review_post
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Plan Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperatorReviewIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Record Operator Review Api V1 Recovery Plans  Plan
+                  Id  Operator Review Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/recovery-plans/{plan_id}/execute:
+    post:
+      tags:
+      - recovery
+      summary: Execute Recovery
+      operationId: execute_recovery_api_v1_recovery_plans__plan_id__execute_post
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Plan Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Execute Recovery Api V1 Recovery Plans  Plan Id  Execute
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/recovery-plans/{plan_id}/verify:
+    post:
+      tags:
+      - recovery
+      summary: Verify Recovery
+      operationId: verify_recovery_api_v1_recovery_plans__plan_id__verify_post
+      parameters:
+      - name: plan_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Plan Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Verify Recovery Api V1 Recovery Plans  Plan Id  Verify
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/chaos/mode:
+    post:
+      tags:
+      - chaos
+      summary: Set Chaos Mode
+      operationId: set_chaos_mode_api_v1_chaos_mode_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChaosModeIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Set Chaos Mode Api V1 Chaos Mode Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/identity/principals:
+    get:
+      tags:
+      - identity
+      summary: List Principals
+      operationId: list_principals_api_v1_identity_principals_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response List Principals Api V1 Identity Principals Get
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/identity/humans:
+    post:
+      tags:
+      - identity
+      summary: Create Human
+      operationId: create_human_api_v1_identity_humans_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HumanPrincipalIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Create Human Api V1 Identity Humans Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/identity/service-accounts:
+    post:
+      tags:
+      - identity
+      summary: Create Service Account
+      operationId: create_service_account_api_v1_identity_service_accounts_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceAccountIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Create Service Account Api V1 Identity Service Accounts
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/identity/principals/{principal_id}/role:
+    post:
+      tags:
+      - identity
+      summary: Change Role
+      operationId: change_role_api_v1_identity_principals__principal_id__role_post
+      parameters:
+      - name: principal_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Principal Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleChangeIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Change Role Api V1 Identity Principals  Principal
+                  Id  Role Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/identity/principals/{principal_id}/password:
+    post:
+      tags:
+      - identity
+      summary: Change Password
+      operationId: change_password_api_v1_identity_principals__principal_id__password_post
+      parameters:
+      - name: principal_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Principal Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/identity/principals/{principal_id}/disable:
+    post:
+      tags:
+      - identity
+      summary: Disable Principal
+      operationId: disable_principal_api_v1_identity_principals__principal_id__disable_post
+      parameters:
+      - name: principal_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Principal Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/identity/principals/{principal_id}/credentials:
+    get:
+      tags:
+      - identity
+      summary: List Credentials
+      operationId: list_credentials_api_v1_identity_principals__principal_id__credentials_get
+      parameters:
+      - name: principal_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Principal Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Credentials Api V1 Identity Principals  Principal
+                  Id  Credentials Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+    post:
+      tags:
+      - identity
+      summary: Issue Credential
+      operationId: issue_credential_api_v1_identity_principals__principal_id__credentials_post
+      parameters:
+      - name: principal_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Principal Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialIssueIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Issue Credential Api V1 Identity Principals  Principal
+                  Id  Credentials Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/identity/credentials/{credential_id}/rotate:
+    post:
+      tags:
+      - identity
+      summary: Rotate Credential
+      operationId: rotate_credential_api_v1_identity_credentials__credential_id__rotate_post
+      parameters:
+      - name: credential_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Credential Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialRotateIn'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Rotate Credential Api V1 Identity Credentials  Credential
+                  Id  Rotate Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/identity/credentials/{credential_id}/revoke:
+    post:
+      tags:
+      - identity
+      summary: Revoke Credential
+      operationId: revoke_credential_api_v1_identity_credentials__credential_id__revoke_post
+      parameters:
+      - name: credential_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Credential Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/security/audit:
+    get:
+      tags:
+      - security
+      summary: Security Audit
+      operationId: security_audit_api_v1_security_audit_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: before
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Before
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Security Audit Api V1 Security Audit Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/demo/false-200/start:
+    post:
+      tags:
+      - demo
+      summary: Start False 200 Demo
+      operationId: start_false_200_demo_api_v1_demo_false_200_start_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Start False 200 Demo Api V1 Demo False 200 Start Post
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/provider-connections/xero/status:
+    get:
+      tags:
+      - providers
+      summary: Xero Status
+      operationId: xero_status_api_v1_provider_connections_xero_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Xero Status Api V1 Provider Connections Xero Status
+                  Get
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/provider-connections/xero/pkce/start:
+    post:
+      tags:
+      - providers
+      summary: Xero Pkce Start
+      operationId: xero_pkce_start_api_v1_provider_connections_xero_pkce_start_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/XeroPkceStartIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Xero Pkce Start Api V1 Provider Connections Xero Pkce
+                  Start Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/provider-connections/xero/callback:
+    get:
+      tags:
+      - providers
+      summary: Xero Pkce Callback
+      operationId: xero_pkce_callback_api_v1_provider_connections_xero_callback_get
+      parameters:
+      - name: state
+        in: query
+        required: true
+        schema:
+          type: string
+          title: State
+      - name: code
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Code
+      - name: error
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/provider-connections/xero/disconnect:
+    post:
+      tags:
+      - providers
+      summary: Xero Disconnect
+      operationId: xero_disconnect_api_v1_provider_connections_xero_disconnect_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Xero Disconnect Api V1 Provider Connections Xero Disconnect
+                  Post
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+  /api/v1/provider-connections/xero/qualify-invoice:
+    post:
+      tags:
+      - providers
+      summary: Xero Qualify Invoice
+      operationId: xero_qualify_invoice_api_v1_provider_connections_xero_qualify_invoice_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/XeroQualificationIn'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Xero Qualify Invoice Api V1 Provider Connections Xero
+                  Qualify Invoice Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+      - SessionCookie: []
+components:
+  schemas:
+    ApprovalIn:
+      properties:
+        plan_hash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+          title: Plan Hash
+        incident_status:
+          type: string
+          pattern: ^recovery_proposed$
+          title: Incident Status
+        reason_code:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{0,63}$
+          title: Reason Code
+          default: approved_by_operator
+        note:
+          anyOf:
+          - type: string
+            maxLength: 500
+            minLength: 1
+          - type: 'null'
+          title: Note
+      additionalProperties: false
+      type: object
+      required:
+      - plan_hash
+      - incident_status
+      title: ApprovalIn
+    BusinessEventIn:
+      properties:
+        idempotency_key:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Idempotency Key
+        correlation_id:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Correlation Id
+        entity_type:
+          type: string
+          pattern: ^[a-z][a-z0-9_.-]{0,63}$
+          title: Entity Type
+        entity_id:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Entity Id
+        event_type:
+          type: string
+          pattern: ^[a-z][a-z0-9_.-]{0,127}$
+          title: Event Type
+        occurred_at:
+          type: string
+          format: date-time
+          title: Occurred At
+        source:
+          $ref: '#/components/schemas/SourceIn'
+        payload:
+          additionalProperties: true
+          type: object
+          maxProperties: 64
+          title: Payload
+      additionalProperties: false
+      type: object
+      required:
+      - idempotency_key
+      - correlation_id
+      - entity_type
+      - entity_id
+      - event_type
+      - occurred_at
+      - source
+      title: BusinessEventIn
+    ChaosModeIn:
+      properties:
+        mode:
+          type: string
+          pattern: ^(normal|false_200|timeout|delayed_write|amount_mismatch|partial_success)$
+          title: Mode
+        correlation_id:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Correlation Id
+      type: object
+      required:
+      - mode
+      title: ChaosModeIn
+    CredentialIssueIn:
+      properties:
+        scopes:
+          items:
+            type: string
+          type: array
+          maxItems: 9
+          minItems: 1
+          uniqueItems: true
+          title: Scopes
+        expires_in_seconds:
+          anyOf:
+          - type: integer
+            maximum: 2592000.0
+            minimum: 1.0
+          - type: 'null'
+          title: Expires In Seconds
+        label:
+          anyOf:
+          - type: string
+            maxLength: 128
+            minLength: 1
+          - type: 'null'
+          title: Label
+      additionalProperties: false
+      type: object
+      required:
+      - scopes
+      title: CredentialIssueIn
+    CredentialRotateIn:
+      properties:
+        expires_in_seconds:
+          anyOf:
+          - type: integer
+            maximum: 2592000.0
+            minimum: 1.0
+          - type: 'null'
+          title: Expires In Seconds
+      additionalProperties: false
+      type: object
+      title: CredentialRotateIn
+    EventReceipt:
+      properties:
+        id:
+          type: string
+          title: Id
+        duplicate:
+          type: boolean
+          title: Duplicate
+        content_hash:
+          type: string
+          title: Content Hash
+      type: object
+      required:
+      - id
+      - duplicate
+      - content_hash
+      title: EventReceipt
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HumanPrincipalIn:
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          minLength: 1
+          title: Name
+        password:
+          type: string
+          maxLength: 1024
+          minLength: 12
+          title: Password
+        role:
+          type: string
+          pattern: ^(viewer|operator|admin)$
+          title: Role
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      - password
+      - role
+      title: HumanPrincipalIn
+    LoginIn:
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          minLength: 1
+          title: Name
+        password:
+          type: string
+          maxLength: 1024
+          minLength: 1
+          title: Password
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      - password
+      title: LoginIn
+    OperatorReviewIn:
+      properties:
+        plan_hash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+          title: Plan Hash
+        capsule_digest:
+          anyOf:
+          - type: string
+            pattern: ^[0-9a-f]{64}$
+          - type: 'null'
+          title: Capsule Digest
+        evidence_understood:
+          type: boolean
+          title: Evidence Understood
+        authoritative_source_understood:
+          type: boolean
+          title: Authoritative Source Understood
+        blast_radius_understood:
+          type: boolean
+          title: Blast Radius Understood
+        proposed_action_understood:
+          type: boolean
+          title: Proposed Action Understood
+        reject_path_available:
+          type: boolean
+          title: Reject Path Available
+        revoke_path_available:
+          type: boolean
+          title: Revoke Path Available
+        reconciliation_path_understood:
+          type: boolean
+          title: Reconciliation Path Understood
+        final_decision:
+          type: string
+          pattern: ^(approve|reject|revoke_approval|observe_only)$
+          title: Final Decision
+        note:
+          anyOf:
+          - type: string
+            maxLength: 500
+            minLength: 1
+          - type: 'null'
+          title: Note
+      additionalProperties: false
+      type: object
+      required:
+      - plan_hash
+      - evidence_understood
+      - authoritative_source_understood
+      - blast_radius_understood
+      - proposed_action_understood
+      - reject_path_available
+      - revoke_path_available
+      - reconciliation_path_understood
+      - final_decision
+      title: OperatorReviewIn
+    PasswordChangeIn:
+      properties:
+        password:
+          type: string
+          maxLength: 1024
+          minLength: 12
+          title: Password
+      additionalProperties: false
+      type: object
+      required:
+      - password
+      title: PasswordChangeIn
+    ReconcileIn:
+      properties:
+        plan_hash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+          title: Plan Hash
+      additionalProperties: false
+      type: object
+      required:
+      - plan_hash
+      title: ReconcileIn
+    RecoveryDecisionIn:
+      properties:
+        plan_hash:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+          title: Plan Hash
+        incident_status:
+          type: string
+          pattern: ^(recovery_proposed|recovery_approved)$
+          title: Incident Status
+        reason_code:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{0,63}$
+          title: Reason Code
+        note:
+          anyOf:
+          - type: string
+            maxLength: 500
+            minLength: 1
+          - type: 'null'
+          title: Note
+      additionalProperties: false
+      type: object
+      required:
+      - plan_hash
+      - incident_status
+      - reason_code
+      title: RecoveryDecisionIn
+    RoleChangeIn:
+      properties:
+        role:
+          type: string
+          pattern: ^(viewer|operator|admin)$
+          title: Role
+      additionalProperties: false
+      type: object
+      required:
+      - role
+      title: RoleChangeIn
+    ServiceAccountIn:
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          minLength: 1
+          title: Name
+        scopes:
+          items:
+            type: string
+          type: array
+          maxItems: 9
+          minItems: 1
+          uniqueItems: true
+          title: Scopes
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      - scopes
+      title: ServiceAccountIn
+    SourceIn:
+      properties:
+        system:
+          type: string
+          maxLength: 64
+          minLength: 1
+          title: System
+        workflow_id:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Workflow Id
+        workflow_version:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Workflow Version
+        execution_id:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Execution Id
+        node_name:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Node Name
+      additionalProperties: false
+      type: object
+      required:
+      - system
+      title: SourceIn
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    XeroPkceStartIn:
+      properties:
+        client_id:
+          type: string
+          maxLength: 128
+          minLength: 8
+          pattern: ^[A-Za-z0-9._-]+$
+          title: Client Id
+      type: object
+      required:
+      - client_id
+      title: XeroPkceStartIn
+    XeroQualificationIn:
+      properties:
+        invoice_id:
+          type: string
+          maxLength: 255
+          minLength: 1
+          title: Invoice Id
+        expected_exists:
+          type: boolean
+          title: Expected Exists
+          default: true
+        expected_amount:
+          anyOf:
+          - type: number
+            minimum: 0.0
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*(?:\d{0,16}|(?=[\d.]{1,19}0*$)\d{0,16}\.\d{0,2}0*$)
+          title: Expected Amount
+        currency:
+          type: string
+          pattern: ^[A-Z]{3}$
+          title: Currency
+        provider_identity_confirmed:
+          type: boolean
+          title: Provider Identity Confirmed
+        entity_confirmed:
+          type: boolean
+          title: Entity Confirmed
+        evidence_bounded:
+          type: boolean
+          title: Evidence Bounded
+        no_mutation_confirmed:
+          type: boolean
+          title: No Mutation Confirmed
+      type: object
+      required:
+      - invoice_id
+      - expected_amount
+      - currency
+      - provider_identity_confirmed
+      - entity_confirmed
+      - evidence_bounded
+      - no_mutation_confirmed
+      title: XeroQualificationIn
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API credential issued to a human or service principal.
+    SessionCookie:
+      type: apiKey
+      in: cookie
+      name: flowproof_session
+      description: Human browser session; state-changing requests also require X-CSRF-Token.

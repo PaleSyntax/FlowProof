@@ -1,0 +1,200 @@
+# FlowProof-owned production core. Ingress and n8n are environment-owned integrations.
+# This file intentionally has no build sections, development defaults, Caddy, or n8n.
+x-logging: &logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-app-common: &app-common
+  image: ${FLOWPROOF_API_IMAGE:?FLOWPROOF_API_IMAGE must be a commit-SHA image reference}
+  environment: &app-environment
+    FLOWPROOF_ENV: production
+    FLOWPROOF_TOKEN_PEPPER_FILE: /run/secrets/token_pepper
+    FLOWPROOF_DATABASE_HOST: postgres
+    FLOWPROOF_DATABASE_PORT: "5432"
+    FLOWPROOF_DATABASE_NAME: ${POSTGRES_DB:?POSTGRES_DB is required}
+    FLOWPROOF_DATABASE_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+    POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    FLOWPROOF_CORS_ORIGIN: ${FLOWPROOF_CORS_ORIGIN:?FLOWPROOF_CORS_ORIGIN is required}
+    FLOWPROOF_MOCK_ACCOUNTING_URL: ${FLOWPROOF_ACCOUNTING_URL:?FLOWPROOF_ACCOUNTING_URL is required}
+    FLOWPROOF_POLICY_PATH: /app/specs/policies/invoice-processing.yaml
+    FLOWPROOF_PROVIDER_CONTRACT_PATH: /app/specs/providers/mock-accounting/contract.json
+    FLOWPROOF_RECOVERY_WRITES_ENABLED: "false"
+    FLOWPROOF_SESSION_COOKIE_SECURE: "true"
+    FLOWPROOF_ENABLE_LEGACY_HEADER_AUTH: "false"
+    FLOWPROOF_ALERT_WEBHOOK_URL_FILE: /run/secrets/alert_webhook_url
+    FLOWPROOF_ALERT_WORKER_POLL_SECONDS: ${FLOWPROOF_ALERT_WORKER_POLL_SECONDS:-2}
+    FLOWPROOF_ALERT_LEASE_SECONDS: ${FLOWPROOF_ALERT_LEASE_SECONDS:-30}
+    FLOWPROOF_ALERT_MAX_ATTEMPTS: ${FLOWPROOF_ALERT_MAX_ATTEMPTS:-5}
+    FLOWPROOF_ALERT_RETRY_BASE_SECONDS: ${FLOWPROOF_ALERT_RETRY_BASE_SECONDS:-5}
+    FLOWPROOF_OPS_WATCHER_POLL_SECONDS: ${FLOWPROOF_OPS_WATCHER_POLL_SECONDS:-10}
+    FLOWPROOF_OPS_WATCHER_HEARTBEAT_STALE_SECONDS: ${FLOWPROOF_OPS_WATCHER_HEARTBEAT_STALE_SECONDS:-90}
+    FLOWPROOF_OPS_WATCHER_VERIFIER_FAILURE_THRESHOLD: ${FLOWPROOF_OPS_WATCHER_VERIFIER_FAILURE_THRESHOLD:-3}
+    FLOWPROOF_OPS_WATCHER_VERIFIER_OBSERVATION_SECONDS: ${FLOWPROOF_OPS_WATCHER_VERIFIER_OBSERVATION_SECONDS:-300}
+    FLOWPROOF_N8N_CREDENTIAL_TTL_SECONDS: ${FLOWPROOF_N8N_CREDENTIAL_TTL_SECONDS:-2592000}
+    FLOWPROOF_CREDENTIAL_EXPIRY_ALERT_SECONDS: ${FLOWPROOF_CREDENTIAL_EXPIRY_ALERT_SECONDS:-604800}
+    FLOWPROOF_SCHEDULER_POLL_SECONDS: ${FLOWPROOF_SCHEDULER_POLL_SECONDS:-5}
+    FLOWPROOF_SCHEDULER_LEASE_SECONDS: ${FLOWPROOF_SCHEDULER_LEASE_SECONDS:-30}
+    FLOWPROOF_SCHEDULER_MAX_ATTEMPTS: ${FLOWPROOF_SCHEDULER_MAX_ATTEMPTS:-5}
+    FLOWPROOF_SCHEDULER_RETRY_BASE_SECONDS: ${FLOWPROOF_SCHEDULER_RETRY_BASE_SECONDS:-5}
+  secrets: &app-secrets
+    - token_pepper
+    - postgres_password
+    - alert_webhook_url
+  networks:
+    - database
+    - application
+  read_only: true
+  tmpfs:
+    - /tmp:rw,noexec,nosuid,size=64m
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  user: "10001:10001"
+  deploy:
+    resources:
+      limits:
+        cpus: "1.00"
+        memory: 768m
+  logging: *logging
+
+services:
+  postgres:
+    image: postgres:16.14-alpine3.24@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - database
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1g
+    logging: *logging
+
+  migrate:
+    <<: *app-common
+    command: ["python", "-m", "flowproof.deployment", "migrate"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    <<: *app-common
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/live')"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    restart: unless-stopped
+    ports:
+      - "${FLOWPROOF_API_BIND:-127.0.0.1}:${FLOWPROOF_API_PORT:-8000}:8000"
+
+  scheduler:
+    <<: *app-common
+    command: ["python", "-m", "flowproof.scheduler"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-m", "flowproof.healthcheck", "--service", "scheduler"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+
+  alert-worker:
+    <<: *app-common
+    command: ["python", "-m", "flowproof.alerts"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-m", "flowproof.healthcheck", "--service", "alert-worker"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+
+  ops-watcher:
+    <<: *app-common
+    command: ["python", "-m", "flowproof.ops_watcher"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-m", "flowproof.healthcheck", "--service", "ops-watcher"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+
+  web:
+    image: ${FLOWPROOF_WEB_IMAGE:?FLOWPROOF_WEB_IMAGE must be a commit-SHA image reference}
+    networks:
+      - application
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+      - /var/cache/nginx:rw,noexec,nosuid,size=16m
+      - /var/run:rw,noexec,nosuid,size=8m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    restart: unless-stopped
+    ports:
+      - "${FLOWPROOF_WEB_BIND:-127.0.0.1}:${FLOWPROOF_WEB_PORT:-8080}:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128m
+    logging: *logging
+
+networks:
+  database:
+    internal: true
+  application:
+
+volumes:
+  postgres-data:
+
+secrets:
+  token_pepper:
+    file: ${FLOWPROOF_SECRETS_DIR:?FLOWPROOF_SECRETS_DIR is required}/token_pepper
+  postgres_password:
+    file: ${FLOWPROOF_SECRETS_DIR:?FLOWPROOF_SECRETS_DIR is required}/postgres_password
+  alert_webhook_url:
+    file: ${FLOWPROOF_SECRETS_DIR:?FLOWPROOF_SECRETS_DIR is required}/alert_webhook_url

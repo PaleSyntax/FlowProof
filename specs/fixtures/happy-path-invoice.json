@@ -1,0 +1,11 @@
+{
+  "delivery_id": "delivery-happy-001",
+  "correlation_id": "order-happy-001",
+  "invoice": {
+    "invoice_id": "INV-DEMO-001",
+    "supplier": "Demo Supplier",
+    "amount": 18000.0,
+    "currency": "RUB",
+    "approved": true
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "evidence_scope": "EXTRACTED_CANDIDATE_CURRENT_HOST_LIFECYCLE",
+  "fresh_machine_proof": false,
+  "candidate": {
+    "filename": "FlowProof-Windows-x86_64-0.5.0-productization-candidate.1.zip",
+    "bytes": 262509918,
+    "sha256": "f6d7ad54e13f2a46517f172eba7588132039d226eb49ac1b907ad141e171ca4b",
+    "member_count": 9,
+    "unexpected_sensitive_member_count": 0,
+    "artifact_status": "UNSIGNED_CANDIDATE",
+    "code_signing": "UNSIGNED_SMARTSCREEN_GATE",
+    "git_commit": "da9057ac21be3fa7ac7e88d19bca9abc509abac9",
+    "git_tree": "f88908bf75dcd336e2df33a2907c6a53c313725d",
+    "git_coordinate_scope": "BASE_COMMIT_AND_TREE_WITH_WORKTREE_CANDIDATE_DIGEST",
+    "candidate_source_sha256": "40cfd8d11a90f07baab8a6342be451c0278823c330bd7e02d61f3550b2a51af3"
+  },
+  "image_bundle": {
+    "filename": "flowproof-images.tar",
+    "sha256": "3a1f5549eb21513de0de2c7a0754cad0ab1e6388b3fc17ffbdb9cbe6491d0ce7",
+    "format": "docker-image-save-tar",
+    "image_count": 4,
+    "docker_load_result": "PASS",
+    "images": [
+      {
+        "reference": "flowproof-api:productization-local",
+        "id": "sha256:350c02719a4e268020b018958bbbf06fe1ced3b77280103ba5ee930b7837b59f"
+      },
+      {
+        "reference": "flowproof-web:productization-local",
+        "id": "sha256:fa900b3524cb07face92515575461ff1fd1871f47e57aa345397c20a01382c22"
+      },
+      {
+        "reference": "flowproof-mock-accounting:productization-local",
+        "id": "sha256:368d13b189a14837272a97cd7bb43f6a27f9ba39664d2037d357651c317afb65"
+      },
+      {
+        "reference": "postgres:16.14-alpine3.24@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777",
+        "id": "sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777"
+      }
+    ]
+  },
+  "lifecycle": {
+    "source_checkout_used_for_runtime": false,
+    "started_at": "2026-08-06T15:58:29.1603200Z",
+    "completed_at": "2026-08-06T16:00:50.2007129Z",
+    "duration_seconds": 141.041,
+    "verdict": "PASS",
+    "stages": {
+      "install_and_readiness": {
+        "status": "PASS",
+        "api_http_status": 200,
+        "web_http_status": 200,
+        "persisted_admin_count": 1
+      },
+      "launcher_shortcut": {"status": "PASS", "isolated_programs_root": true},
+      "backup": {"status": "PASS", "non_empty": true, "sha256_sidecar": true, "metadata_sidecar": true},
+      "sanitized_diagnostics": {"status": "PASS", "exact_generated_secret_scan": "PASS"},
+      "restart": {"status": "PASS", "service_health": "READY"},
+      "stop_start": {"status": "PASS", "stopped_health": "NOT_READY", "started_health": "READY"},
+      "uninstall_preserve_and_reinstall": {
+        "status": "PASS",
+        "data_preserved": true,
+        "persisted_admin_count_before": 1,
+        "persisted_admin_count_after": 1
+      },
+      "confirmed_full_delete": {"status": "PASS", "data_root_absent": true}
+    }
+  },
+  "post_cleanup": {
+    "flowproof_container_count": 0,
+    "flowproof_network_count": 0,
+    "temporary_data_root_exists": false,
+    "temporary_extraction_root_exists": false,
+    "candidate_asset_preserved": true
+  },
+  "truth_boundary": {
+    "fixture_evidence_classification": "TEST_FIXTURE_ONLY",
+    "real_provider_proven": false,
+    "fresh_machine_proven": false,
+    "signed_asset_proven": false
+  }
+}

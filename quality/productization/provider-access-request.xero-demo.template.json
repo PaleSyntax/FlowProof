@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "status": "OWNER_AUTHORIZED_PROVIDER_ACCESS_REQUIRED",
+  "request_id": null,
+  "requested_at": null,
+  "provider": {
+    "provider_name": "Xero Demo Company",
+    "provider_id": "xero-demo",
+    "environment": "sandbox",
+    "official_api_version": "Accounting API 2.0",
+    "documentation_url": "https://developer.xero.com/documentation/api/accounting/invoices",
+    "sandbox_base_url": "https://api.xero.com/api.xro/2.0",
+    "authentication_mode": "OAuth 2.0 PKCE read-only browser consent",
+    "credential_reference": "not-applicable"
+  },
+  "safe_entity": {
+    "invoice_id": null,
+    "expected_exists": null,
+    "expected_amount": null,
+    "currency": null,
+    "contains_customer_data": false
+  },
+  "authorization": {
+    "owner_name": null,
+    "authorized_at": null,
+    "expires_at": null,
+    "authorization_reference": null,
+    "observe_only": true,
+    "permitted_methods": ["GET"],
+    "permitted_path_template": "/Invoices/{invoice_id}",
+    "mutations_allowed": false,
+    "recovery_write_authorized": false
+  },
+  "operator": {
+    "name": null,
+    "role": null
+  },
+  "security": {
+    "raw_secret_in_artifact": false,
+    "raw_customer_payload_authorized": false,
+    "rollback_required_for_read_only": false
+  }
+}

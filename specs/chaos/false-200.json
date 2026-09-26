@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "id": "false_200",
+  "title": "Successful response without persistence",
+  "mock_mode": "false_200",
+  "expected": {
+    "command_http_status": 200,
+    "external_invoice_count": 0,
+    "open_incident_invariant": "external_invoice_exists",
+    "recovery_action": "register_missing_invoice"
+  }
+}

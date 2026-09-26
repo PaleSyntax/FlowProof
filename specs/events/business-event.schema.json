@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/business-event.schema.json",
+  "title": "FlowProof Business Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "idempotency_key",
+    "correlation_id",
+    "entity_type",
+    "entity_id",
+    "event_type",
+    "occurred_at",
+    "source"
+  ],
+  "properties": {
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "entity_type": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.-]{0,63}$"
+    },
+    "entity_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "event_type": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system"
+      ],
+      "properties": {
+        "system": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "workflow_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 255
+        },
+        "workflow_version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 255
+        },
+        "execution_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 255
+        },
+        "node_name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 255
+        }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "maxProperties": 64
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "idempotency_key": "invoice:SAFE-SANDBOX-INVOICE-001:registration-acknowledged:delivery-001",
+  "correlation_id": "safe-sandbox-invoice-lifecycle-001",
+  "entity_type": "invoice",
+  "entity_id": "SAFE-SANDBOX-INVOICE-001",
+  "event_type": "invoice.registration_acknowledged",
+  "occurred_at": "2026-08-06T00:00:00Z",
+  "source": {
+    "system": "n8n",
+    "workflow_id": "REPLACE_WITH_PROTECTED_WORKFLOW_ID",
+    "workflow_version": "REPLACE_WITH_WORKFLOW_VERSION",
+    "execution_id": "REPLACE_WITH_N8N_EXECUTION_ID",
+    "node_name": "Emit invoice.registration_acknowledged"
+  },
+  "payload": {
+    "amount": 100.0,
+    "currency": "USD"
+  }
+}

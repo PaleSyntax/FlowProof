@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/recovery-attempt.schema.json",
+  "title": "FlowProof durable recovery attempt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "recovery_plan_id",
+    "incident_id",
+    "approval_decision_id",
+    "active_transport_invocation_id",
+    "attempt_ordinal",
+    "execution_idempotency_key",
+    "plan_hash",
+    "provider_contract_digest",
+    "provider_id",
+    "provider_environment",
+    "adapter_version",
+    "request_digest",
+    "precondition_observation_digest",
+    "state",
+    "outcome_classification",
+    "provider_operation_reference",
+    "retry_after_seconds",
+    "semantic_attempt_count",
+    "transport_invocation_count",
+    "retry_permitted",
+    "retry_reason",
+    "safe_result",
+    "created_at",
+    "updated_at",
+    "accepted_at",
+    "reconciled_at",
+    "lock_version"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "recovery_plan_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "incident_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "approval_decision_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "active_transport_invocation_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "attempt_ordinal": {
+      "const": 1
+    },
+    "execution_idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "plan_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "provider_contract_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "provider_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "provider_environment": {
+      "enum": [
+        "sandbox",
+        "partner_test"
+      ]
+    },
+    "adapter_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "request_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "precondition_observation_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "state": {
+      "enum": [
+        "PREPARED",
+        "DISPATCHING",
+        "ACCEPTED",
+        "PRE_ACCEPTANCE_FAILED",
+        "OUTCOME_UNKNOWN",
+        "RECONCILING",
+        "RECONCILED_EFFECT_PRESENT",
+        "RECONCILED_EFFECT_ABSENT",
+        "RECONCILED_CONFLICT",
+        "NEEDS_ATTENTION",
+        "VERIFYING",
+        "VERIFIED",
+        "STILL_FAILED",
+        "SUPERSEDED_EXTERNAL_RESOLUTION"
+      ]
+    },
+    "outcome_classification": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "provider_operation_reference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 255
+    },
+    "retry_after_seconds": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 86400
+    },
+    "semantic_attempt_count": {
+      "const": 1
+    },
+    "transport_invocation_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "retry_permitted": {
+      "type": "boolean"
+    },
+    "retry_reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "safe_result": {
+      "type": "object",
+      "properties": {
+        "reconciliation_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "reservation_id",
+              "observation",
+              "reconciled_at",
+              "prior_attempt_state",
+              "prior_reservation_state",
+              "transport_invocation_count",
+              "reapproval_action",
+              "retry_reason",
+              "write_outcome",
+              "reconciliation_claim"
+            ],
+            "properties": {
+              "reservation_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uuid"
+              },
+              "observation": {
+                "type": "object"
+              },
+              "reconciled_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "prior_attempt_state": {
+                "type": "string"
+              },
+              "prior_reservation_state": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "transport_invocation_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "reapproval_action": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "retry_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "write_outcome": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "reconciliation_claim": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "owner",
+                  "generation",
+                  "reservation_lock_version",
+                  "attempt_lock_version",
+                  "lease_expires_at",
+                  "reason"
+                ],
+                "properties": {
+                  "owner": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "generation": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "reservation_lock_version": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1
+                  },
+                  "attempt_lock_version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "lease_expires_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "accepted_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "reconciled_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "lock_version": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

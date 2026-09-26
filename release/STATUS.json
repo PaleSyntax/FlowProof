@@ -1,0 +1,84 @@
+{
+  "schema_version": 5,
+  "project": "FlowProof",
+  "package_version": "0.6.0",
+  "release_track": "portfolio_productization",
+  "portfolio_release": {
+    "classification": "PORTFOLIO_RELEASE_CANDIDATE",
+    "publication_state": "PRIVATE_UNPUBLISHED",
+    "repository_visibility": "PRIVATE",
+    "target_tag": "v0.6.0",
+    "professional_destination": "OWNER_INPUT_REQUIRED"
+  },
+  "source_state": {
+    "base_release": "v0.5.0",
+    "base_commit": "da9057ac21be3fa7ac7e88d19bca9abc509abac9",
+    "branch": "codex/showable-niche-product",
+    "worktree_overlay": false,
+    "recovery_backup_manifest_sha256": "46e5dd21301c43a24b6ee7df0066c3a72147c38babb896c031e9783a5da0b366",
+    "release_commit": null,
+    "release_tree": null
+  },
+  "local_verification": {
+    "status": "LOCAL_PORTFOLIO_RELEASE_READY",
+    "backend": "LOCKED_ENV_PASS_252_3",
+    "frontend": "NPM_CI_LINT_BUILD_PASS_FULL_AND_PRODUCTION_AUDIT_ZERO",
+    "contracts": "PASS_VERSION_RELEASE_OPENAPI_AND_4_WORKFLOWS",
+    "secrets": "GITLEAKS_V8_18_4_TREE_AND_148_COMMIT_HISTORY_PASS",
+    "runtime": "PASS_FALSE_200_REAL_N8N_AND_EXTRACTED_CANDIDATE_N8N_TEST_FIXTURE_ONLY",
+    "packaging": "PASS_EXACT_WINDOWS_CHECKSUM_8_STAGE_AND_SOURCE_FREE_N8N",
+    "visual_qa": "PASS_DESKTOP_AND_390PX_MOBILE_FIXTURE",
+    "python_dependency_audit": "PIP_AUDIT_2_9_0_NO_KNOWN_VULNERABILITIES",
+    "owned_image_trivy": "PASS_OWNED_ZERO_POSTGRES_GOSU_VEX_22_VALIDATED_ZERO_REACHABLE"
+  },
+  "acceptance_axes": {
+    "portfolio_release": {
+      "status": "LOCAL_PORTFOLIO_RELEASE_READY",
+      "required_evidence": "Executed exact-head GitHub Actions, a public anonymous clone, and published v0.6.0 assets downloaded and checksum-verified."
+    },
+    "real_provider": {
+      "status": "NOT_VERIFIED_EXTERNAL",
+      "required_evidence": "Owner-authorized Xero Demo consent, one bounded invoice read and one named-human review."
+    },
+    "fresh_windows": {
+      "status": "NOT_VERIFIED_EXTERNAL",
+      "required_evidence": "Independent same-user Windows 11 VM or fresh interactive tester lifecycle."
+    },
+    "company_production": {
+      "status": "NOT_CLAIMED",
+      "required_evidence": "Company TLS, DNS, n8n, secret management, off-host backup, on-call and security acceptance."
+    }
+  },
+  "windows_asset": {
+    "target_filename": "FlowProof-Windows-x86_64-0.6.0.zip",
+    "code_signing": "UNSIGNED",
+    "fresh_machine_proof": "NOT_VERIFIED_EXTERNAL",
+    "current_host_proof": "PASS_EXTRACTED_V060_8_STAGE_AND_SOURCE_FREE_N8N"
+  },
+  "current_implementation": {
+    "architecture": "CANONICAL_STATIC_COMPOSITION",
+    "migration_head": "0010_release_groundwork_fencing",
+    "evidence_capsule_schema": "1.1",
+    "fixture_classification": "TEST_FIXTURE_ONLY",
+    "xero_classification": "CONTRACT_TESTED_LIVE_OWNER_AUTH_REQUIRED",
+    "xero_recovery_write": "NOT_IMPLEMENTED",
+    "api_versioning": "/api/v1"
+  },
+  "accepted_baseline": {
+    "version": "0.5.0",
+    "main_merge_sha": "da9057ac21be3fa7ac7e88d19bca9abc509abac9",
+    "pull_request": 8,
+    "pull_request_state": "MERGED",
+    "release_state": "PUBLISHED_PRIVATE_REPOSITORY",
+    "release_url": "PRIVATE_BASELINE_REFERENCE_WITHHELD"
+  },
+  "closure_markers": [
+    "PORTFOLIO_RELEASE_CANDIDATE",
+    "REAL_PROVIDER_NOT_VERIFIED",
+    "FRESH_WINDOWS_NOT_VERIFIED",
+    "UNSIGNED_WINDOWS_ASSET",
+    "COMPANY_PRODUCTION_NOT_CLAIMED"
+  ],
+  "next_gate": "GITHUB_PUBLICATION_AND_RELEASE_EVIDENCE",
+  "evidence_rule": "Local source tests, runtime proof, packaging proof, GitHub publication, real-provider acceptance, fresh-machine usability and company-production acceptance are independent evidence axes."
+}

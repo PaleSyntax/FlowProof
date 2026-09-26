@@ -1,0 +1,53 @@
+{
+  "evidence_version": 1,
+  "image": {
+    "reference": "postgres:16.14-alpine3.24",
+    "manifest_digest": "sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777",
+    "amd64_manifest_digest": "sha256:7a396fd264a2067788b6551122b50f162bf6136312c7fc9d74381cb92c648382",
+    "postgres_version": "16.14",
+    "alpine_version": "3.24.1"
+  },
+  "component": {"path":"/usr/local/bin/gosu","version":"1.19","go_build_version":"go1.24.6","purl":"pkg:golang/stdlib@v1.24.6"},
+  "source": {
+    "repository": "https://github.com/tianon/gosu.git",
+    "tag": "1.19",
+    "commit": "6456aaa0f3c854d199d0f037f068eb97515b7513",
+    "reachability_tool": "govulncheck v1.1.4",
+    "scan_go_version": "go1.24.6",
+    "scan_level": "symbol",
+    "acquisition": {
+      "module_proxy": "https://proxy.golang.org",
+      "module_path": "github.com/tianon/gosu",
+      "module_query": "6456aaa0f3c854d199d0f037f068eb97515b7513",
+      "module_version": "v0.0.0-20250923190938-6456aaa0f3c8",
+      "module_sum": "h1:HIpXk5mGBQGfOqcaBbRT4Vnss8NPICnMGlD5xTlPBdQ=",
+      "go_mod_sum": "h1:SwhRwWsO6iqXZN9CpIaU9CnOrUqpWDINW16KaaSqnrU=",
+      "direct_vcs_disabled": true
+    }
+  },
+  "result": {"classification":"not_affected","justification":"vulnerable_code_not_in_execute_path","reachable_findings":[]},
+  "findings": [
+    {"id":"CVE-2025-68121","severity":"CRITICAL","fixed_versions":["1.24.13","1.25.7","1.26.0-rc.3"]},
+    {"id":"CVE-2025-61726","severity":"HIGH","fixed_versions":["1.24.12","1.25.6"]},
+    {"id":"CVE-2025-61729","severity":"HIGH","fixed_versions":["1.24.11","1.25.5"]},
+    {"id":"CVE-2026-25679","severity":"HIGH","fixed_versions":["1.25.8","1.26.1"]},
+    {"id":"CVE-2026-27145","severity":"HIGH","fixed_versions":["1.25.11","1.26.4"]},
+    {"id":"CVE-2026-32280","severity":"HIGH","fixed_versions":["1.25.9","1.26.2"]},
+    {"id":"CVE-2026-32281","severity":"HIGH","fixed_versions":["1.25.9","1.26.2"]},
+    {"id":"CVE-2026-32283","severity":"HIGH","fixed_versions":["1.25.9","1.26.2"]},
+    {"id":"CVE-2026-33811","severity":"HIGH","fixed_versions":["1.25.10","1.26.3"]},
+    {"id":"CVE-2026-33814","severity":"HIGH","fixed_versions":["1.25.10","1.26.3"]},
+    {"id":"CVE-2026-33818","severity":"HIGH","fixed_versions":["1.25.13","1.26.6","1.27.0-rc.3"]},
+    {"id":"CVE-2026-39820","severity":"HIGH","fixed_versions":["1.25.10","1.26.3"]},
+    {"id":"CVE-2026-39821","severity":"HIGH","fixed_versions":["1.25.13","1.26.6","1.27.0-rc.3"]},
+    {"id":"CVE-2026-39822","severity":"HIGH","fixed_versions":["1.25.12","1.26.5","1.27.0-rc.2"]},
+    {"id":"CVE-2026-39836","severity":"HIGH","fixed_versions":["1.25.10","1.26.3"]},
+    {"id":"CVE-2026-42499","severity":"HIGH","fixed_versions":["1.25.10","1.26.3"]},
+    {"id":"CVE-2026-42504","severity":"HIGH","fixed_versions":["1.25.11","1.26.4"]},
+    {"id":"CVE-2026-56853","severity":"HIGH","fixed_versions":["1.25.13","1.26.6","1.27.0-rc.3"]},
+    {"id":"CVE-2026-56858","severity":"HIGH","fixed_versions":["1.25.13","1.26.6","1.27.0-rc.3"]},
+    {"id":"CVE-2026-56859","severity":"HIGH","fixed_versions":["1.25.13","1.26.6","1.27.0-rc.3"]},
+    {"id":"CVE-2026-56860","severity":"HIGH","fixed_versions":["1.25.13","1.26.6","1.27.0-rc.3"]},
+    {"id":"CVE-2026-56862","severity":"HIGH","fixed_versions":["1.25.13","1.26.6","1.27.0-rc.3"]}
+  ]
+}

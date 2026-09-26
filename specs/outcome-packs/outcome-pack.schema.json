@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/outcome-pack.schema.json",
+  "title": "FlowProof outcome pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pack_id",
+    "version",
+    "vertical",
+    "positioning",
+    "status",
+    "default_mode",
+    "provider_gate",
+    "event_contract",
+    "correlation_contract",
+    "invariants",
+    "authoritative_read",
+    "incident",
+    "evidence_projection",
+    "operator_playbook",
+    "recovery_boundary",
+    "assets"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "pack_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+    "version": {"type": "string", "minLength": 1, "maxLength": 64},
+    "vertical": {"const": "invoice-accounting-outcome-assurance"},
+    "positioning": {"type": "string", "minLength": 1, "maxLength": 255},
+    "status": {"enum": ["LOCAL_PACK_READY_PROVIDER_BLOCKED", "LIVE_OBSERVE_ONLY_PROVEN"]},
+    "default_mode": {"const": "observe_only"},
+    "provider_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selection_status",
+        "allowed_environments",
+        "contract_schema",
+        "explicit_adapter_registration_required",
+        "credential_material_allowed_in_pack",
+        "live_evidence_available"
+      ],
+      "properties": {
+        "selection_status": {"enum": ["OWNER_AUTHORIZED_PROVIDER_ACCESS_REQUIRED", "OWNER_AUTHORIZED_PROVIDER_SELECTED"]},
+        "allowed_environments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["sandbox", "partner_test"]}
+        },
+        "contract_schema": {"type": "string", "minLength": 1},
+        "explicit_adapter_registration_required": {"const": true},
+        "credential_material_allowed_in_pack": {"const": false},
+        "live_evidence_available": {"type": "boolean"}
+      }
+    },
+    "event_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "entity_type", "events", "payload_allowlist"],
+      "properties": {
+        "schema": {"type": "string", "minLength": 1},
+        "entity_type": {"const": "invoice"},
+        "events": {
+          "type": "array",
+          "minItems": 3,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^invoice\\.[a-z_]+$"}
+        },
+        "payload_allowlist": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"enum": ["amount", "currency"]}
+        }
+      }
+    },
+    "correlation_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_id", "correlation_id", "idempotency_key", "retry_rule"],
+      "properties": {
+        "entity_id": {"type": "string", "minLength": 1},
+        "correlation_id": {"type": "string", "minLength": 1},
+        "idempotency_key": {"type": "string", "minLength": 1},
+        "retry_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "invariants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "deterministic", "recovery_action"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "type": {"enum": ["ordering", "exactly_once", "external_assertion", "eventually", "value_matches"]},
+          "deterministic": {"const": true},
+          "recovery_action": {"type": "null"}
+        }
+      }
+    },
+    "authoritative_read": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity", "method", "projection", "allowed_mutation_methods", "unavailable_is_pass"],
+      "properties": {
+        "entity": {"const": "invoice"},
+        "method": {"const": "GET"},
+        "projection": {
+          "type": "array",
+          "minItems": 4,
+          "uniqueItems": true,
+          "items": {"enum": ["invoice_id", "id", "amount", "currency", "status"]}
+        },
+        "allowed_mutation_methods": {"const": []},
+        "unavailable_is_pass": {"const": false}
+      }
+    },
+    "incident": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["headline", "reason_codes", "deduplication_scope"],
+      "properties": {
+        "headline": {"type": "string", "minLength": 1},
+        "reason_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "deduplication_scope": {"const": "correlation_id+invariant_id"}
+      }
+    },
+    "evidence_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_fields", "forbidden_fields", "content_digest_required"],
+      "properties": {
+        "allowed_fields": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "forbidden_fields": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "content_digest_required": {"const": true}
+      }
+    },
+    "operator_playbook": {
+      "type": "array",
+      "minItems": 4,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "recovery_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "write_authority_included", "enablement_requirements"],
+      "properties": {
+        "enabled": {"const": false},
+        "write_authority_included": {"const": false},
+        "enablement_requirements": {"type": "array", "minItems": 4, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "assets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy", "event_template", "provider_access_request", "lifecycle_evidence_schema", "operator_guide"],
+      "properties": {
+        "policy": {"type": "string", "minLength": 1},
+        "event_template": {"type": "string", "minLength": 1},
+        "provider_access_request": {"type": "string", "minLength": 1},
+        "lifecycle_evidence_schema": {"type": "string", "minLength": 1},
+        "operator_guide": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

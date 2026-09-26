@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "session_id": null,
+  "started_at": null,
+  "completed_at": null,
+  "tester_role": null,
+  "environment": {
+    "windows_version": "Windows 11 10.0.22631",
+    "architecture": "x86_64",
+    "profile_type": "fresh_local_profile",
+    "source_checkout_present": false,
+    "preinstalled_tools": ["Docker Desktop"]
+  },
+  "artifact": {
+    "filename": "FlowProof-Windows-x86_64-0.5.0-productization-candidate.3.zip",
+    "sha256": "7d46dc2905912c10619ce9badb02914021f06bc3a96f5cdb04bbb3c4ffcfcfc6",
+    "git_commit": "da9057ac21be3fa7ac7e88d19bca9abc509abac9",
+    "git_tree": "f88908bf75dcd336e2df33a2907c6a53c313725d"
+  },
+  "metrics": {
+    "download_to_running_seconds": null,
+    "running_to_first_demo_outcome_seconds": null,
+    "mandatory_decision_count": null,
+    "terminal_command_count": null,
+    "manual_secret_handoff_count": null,
+    "support_intervention_count": null,
+    "install_failure_count": null
+  },
+  "stages": {
+    "prerequisite_check": {
+      "status": "BLOCKED",
+      "evidence": [
+        "Candidate.3 passed source-free current-host lifecycle, update and n8n qualification",
+        "The prior elevated disposable-profile attempt was canceled before temporary-user creation",
+        "No new UAC approval or disposable Windows 11 VM was provided for candidate.3"
+      ],
+      "note": "No fresh-profile session was started for candidate.3; current-host evidence cannot be promoted to fresh-machine proof."
+    },
+    "install": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "first_open": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "safe_demo": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "restart_reopen": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "diagnostics_export": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "backup": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "uninstall_preserve": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "reinstall_retention": { "status": "NOT_RUN", "evidence": [], "note": null }
+  },
+  "security": {
+    "credentials_in_artifact": false,
+    "env_file_in_artifact": false,
+    "database_in_artifact": false,
+    "raw_customer_data_in_artifact": false
+  },
+  "result": "BLOCKED",
+  "blocker": "FRESH_LOCAL_PROFILE_UAC_APPROVAL_REQUIRED: approve one elevated candidate.3 disposable-profile harness run, or provide a disposable Windows 11 VM with Docker Desktop."
+}

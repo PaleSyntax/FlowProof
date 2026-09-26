@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/incident.schema.json",
+  "title": "FlowProof Incident",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "correlation_id",
+    "entity_type",
+    "entity_id",
+    "policy",
+    "invariant_id",
+    "severity",
+    "status",
+    "summary",
+    "evidence",
+    "opened_at",
+    "resolved_at",
+    "recovery_plan"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entity_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entity_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "invariant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "severity": {
+      "enum": [
+        "info",
+        "warning",
+        "high",
+        "critical"
+      ]
+    },
+    "status": {
+      "enum": [
+        "open",
+        "acknowledged",
+        "recovery_proposed",
+        "recovery_approved",
+        "recovery_rejected",
+        "recovery_running",
+        "verifying",
+        "still_failed",
+        "resolved",
+        "rejected",
+        "needs_attention"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "opened_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolved_at": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "recovery_plan": {
+      "oneOf": [
+        {
+          "$ref": "https://flowproof.local/schemas/recovery-plan.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

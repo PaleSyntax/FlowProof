@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "evidence_scope": "CURRENT_WORKTREE_LOCAL_N8N_FIXTURE_ONLY",
+  "result": "PASS",
+  "started_from_source_checkout": true,
+  "real_n8n_execution_proven": true,
+  "real_provider_proven": false,
+  "evidence_classification": "TEST_FIXTURE_ONLY",
+  "n8n": {
+    "image": "n8nio/n8n:2.30.5@sha256:450853cd21a2ce36587c4c860eb26927c1ceba9496bf55f4c213b5d3a6dc8c6f",
+    "credential_import_count": 1,
+    "workflow_import_count": 4,
+    "published_workflows": [
+      "FlowProof Invoice Intake",
+      "FlowProof Invoice Approval",
+      "FlowProof Approved Invoice Recovery"
+    ],
+    "execution_result": "successful"
+  },
+  "outcome": {
+    "correlation_id_recorded": true,
+    "invoice_id_recorded": true,
+    "incident_id_recorded": true,
+    "recovery_plan_id_recorded": true,
+    "deadline_job_id_recorded": true,
+    "final_incident_status": "resolved",
+    "mock_invoice_count": 1,
+    "human_approval": "passed",
+    "actor_separation": "passed"
+  },
+  "duration_seconds": 167.3,
+  "startup_race_regression": {
+    "initial_result": "FAIL",
+    "failure": "n8n healthz became reachable before the SQLite migration ledger was stable for a second CLI process",
+    "observed_error_code": "SQLITE_ERROR_DUPLICATE_COLUMN_LAST_ACTIVE_AT",
+    "correction": "bounded 15-second post-health stabilization before credential import",
+    "cleanup_correction": "unique smoke volumes are removed in finally",
+    "targeted_contract_tests": "PASS",
+    "final_rerun": "PASS"
+  },
+  "post_cleanup": {
+    "successful_project_container_count": 0,
+    "successful_project_network_count": 0,
+    "successful_project_volume_count": 0,
+    "interrupted_project_container_count": 0,
+    "interrupted_project_network_count": 0,
+    "interrupted_project_volume_count": 0
+  },
+  "truth_boundary": "This proves the local n8n + Mock Accounting safe fixture lifecycle only. It is not owner-authorized provider, customer, fresh-machine, GitHub Actions, or release evidence."
+}

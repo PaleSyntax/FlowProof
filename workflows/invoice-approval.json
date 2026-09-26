@@ -1,0 +1,293 @@
+{
+  "name": "FlowProof Invoice Approval",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "invoice-approve",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Invoice approval webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "webhookId": "4d8bea12-0cce-4ce0-86c8-68f51c061002",
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json.body ?? $input.first().json;\nconst invoice = input.invoice;\nif (!input.delivery_id || !input.correlation_id || !invoice?.invoice_id || typeof invoice.amount !== 'number' || invoice.amount <= 0 || !invoice.currency || !input.actor) throw new Error('Invalid invoice approval');\nreturn [{ json: { delivery_id: input.delivery_id, correlation_id: input.correlation_id, invoice, actor: input.actor, decision: input.decision, idempotency_prefix: `invoice:${invoice.invoice_id}:${input.delivery_id}` } }];"
+      },
+      "name": "Normalize approved invoice",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$('Normalize approved invoice').first().json.decision}}",
+              "rightValue": "approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      },
+      "name": "Decision is approved",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/v1/events",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { idempotency_key: $('Normalize approved invoice').first().json.idempotency_prefix + ':approved', correlation_id: $('Normalize approved invoice').first().json.correlation_id, entity_type: 'invoice', entity_id: $('Normalize approved invoice').first().json.invoice.invoice_id, event_type: 'invoice.approved', occurred_at: $now.toISO(), source: { system: 'n8n', workflow_id: 'invoice-approval', execution_id: $execution.id, node_name: 'Emit invoice.approved' }, payload: { actor: $('Normalize approved invoice').first().json.actor } } }}",
+        "options": {
+          "timeout": 5000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "name": "Emit invoice.approved",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        -100
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "FlowProof API service account",
+          "id": "flowproof-api-service-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/v1/events",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { idempotency_key: $('Normalize approved invoice').first().json.idempotency_prefix + ':registration-requested', correlation_id: $('Normalize approved invoice').first().json.correlation_id, entity_type: 'invoice', entity_id: $('Normalize approved invoice').first().json.invoice.invoice_id, event_type: 'invoice.registration_requested', occurred_at: $now.toISO(), source: { system: 'n8n', workflow_id: 'invoice-approval', execution_id: $execution.id, node_name: 'Emit invoice.registration_requested' }, payload: { amount: $('Normalize approved invoice').first().json.invoice.amount, currency: $('Normalize approved invoice').first().json.invoice.currency } } }}",
+        "options": {
+          "timeout": 5000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "name": "Emit invoice.registration_requested",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        -100
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "FlowProof API service account",
+          "id": "flowproof-api-service-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mock-accounting:8001/invoices",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Idempotency-Key",
+              "value": "={{$('Normalize approved invoice').first().json.idempotency_prefix + ':accounting-register'}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { invoice_id: $('Normalize approved invoice').first().json.invoice.invoice_id, amount: $('Normalize approved invoice').first().json.invoice.amount, currency: $('Normalize approved invoice').first().json.invoice.currency } }}",
+        "options": {
+          "timeout": 5000
+        }
+      },
+      "name": "Register invoice in accounting",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1180,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/v1/events",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { idempotency_key: $('Normalize approved invoice').first().json.idempotency_prefix + ':registration-ack', correlation_id: $('Normalize approved invoice').first().json.correlation_id, entity_type: 'invoice', entity_id: $('Normalize approved invoice').first().json.invoice.invoice_id, event_type: 'invoice.registration_acknowledged', occurred_at: $now.toISO(), source: { system: 'n8n', workflow_id: 'invoice-approval', execution_id: $execution.id, node_name: 'Emit invoice.registration_acknowledged' }, payload: { amount: $('Normalize approved invoice').first().json.invoice.amount, currency: $('Normalize approved invoice').first().json.invoice.currency } } }}",
+        "options": {
+          "timeout": 5000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "name": "Emit invoice.registration_acknowledged",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1420,
+        -100
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "FlowProof API service account",
+          "id": "flowproof-api-service-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { correlation_id: $('Normalize approved invoice').first().json.correlation_id, invoice_id: $('Normalize approved invoice').first().json.invoice.invoice_id, acknowledged: true } }}",
+        "options": {}
+      },
+      "name": "Return approved registration",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1660,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { correlation_id: $('Normalize approved invoice').first().json.correlation_id, decision: 'rejected' } }}",
+        "options": {}
+      },
+      "name": "Return rejected",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        700,
+        160
+      ]
+    }
+  ],
+  "connections": {
+    "Invoice approval webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize approved invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize approved invoice": {
+      "main": [
+        [
+          {
+            "node": "Decision is approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decision is approved": {
+      "main": [
+        [
+          {
+            "node": "Emit invoice.approved",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return rejected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emit invoice.approved": {
+      "main": [
+        [
+          {
+            "node": "Emit invoice.registration_requested",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emit invoice.registration_requested": {
+      "main": [
+        [
+          {
+            "node": "Register invoice in accounting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Register invoice in accounting": {
+      "main": [
+        [
+          {
+            "node": "Emit invoice.registration_acknowledged",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emit invoice.registration_acknowledged": {
+      "main": [
+        [
+          {
+            "node": "Return approved registration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "id": "flowproof-invoice-approval"
+}

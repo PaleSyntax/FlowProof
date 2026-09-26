@@ -1,0 +1,108 @@
+{
+  "name": "FlowProof Technical Error Handler",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "n8n Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const execution = $input.first().json.execution || {};\nreturn [{ json: { correlation_id: execution.data?.resultData?.runData?.correlation_id || 'unknown', workflow_id: execution.workflowId || 'unknown', execution_id: execution.id || 'unknown', last_node: execution.lastNodeExecuted || 'unknown', error_class: String(execution.error?.name || 'WorkflowError').slice(0, 128), message: String(execution.error?.message || 'workflow failed').slice(0, 512) } }];"
+      },
+      "name": "Normalize safe failure telemetry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/api/v1/events",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { idempotency_key: 'technical-failure:' + $json.execution_id, correlation_id: $json.correlation_id, entity_type: 'workflow', entity_id: $json.workflow_id, event_type: 'technical.workflow_failed', occurred_at: $now.toISO(), source: { system: 'n8n', workflow_id: $json.workflow_id, execution_id: $json.execution_id, node_name: 'FlowProof Technical Error Handler' }, payload: { last_node: $json.last_node, error_class: $json.error_class, message: $json.message } } }}",
+        "options": {
+          "timeout": 5000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "name": "Emit technical.workflow_failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "FlowProof API service account",
+          "id": "flowproof-api-service-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "seconds"
+      },
+      "name": "Bounded retry delay",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        740,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "n8n Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize safe failure telemetry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize safe failure telemetry": {
+      "main": [
+        [
+          {
+            "node": "Emit technical.workflow_failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Emit technical.workflow_failed": {
+      "main": [
+        [
+          {
+            "node": "Bounded retry delay",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "id": "flowproof-error-handler"
+}

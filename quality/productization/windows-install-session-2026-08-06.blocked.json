@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "session_id": null,
+  "started_at": null,
+  "completed_at": null,
+  "tester_role": null,
+  "environment": {
+    "windows_version": null,
+    "architecture": null,
+    "profile_type": "windows_sandbox",
+    "source_checkout_present": false,
+    "preinstalled_tools": []
+  },
+  "artifact": {
+    "filename": "FlowProof-Windows-x86_64-0.5.0-productization-candidate.1.zip",
+    "sha256": "f6d7ad54e13f2a46517f172eba7588132039d226eb49ac1b907ad141e171ca4b",
+    "git_commit": "da9057ac21be3fa7ac7e88d19bca9abc509abac9",
+    "git_tree": "f88908bf75dcd336e2df33a2907c6a53c313725d"
+  },
+  "metrics": {
+    "download_to_running_seconds": null,
+    "running_to_first_demo_outcome_seconds": null,
+    "mandatory_decision_count": null,
+    "terminal_command_count": null,
+    "manual_secret_handoff_count": null,
+    "support_intervention_count": null,
+    "install_failure_count": null
+  },
+  "stages": {
+    "prerequisite_check": {
+      "status": "BLOCKED",
+      "evidence": [
+        "WindowsSandbox.exe was not present on the qualification host",
+        "Containers-DisposableClientVM state query returned COMException"
+      ],
+      "note": "No fresh Windows Sandbox, disposable VM, or separately supplied clean Windows profile was available."
+    },
+    "install": {"status": "NOT_RUN", "evidence": [], "note": null},
+    "first_open": {"status": "NOT_RUN", "evidence": [], "note": null},
+    "safe_demo": {"status": "NOT_RUN", "evidence": [], "note": null},
+    "restart_reopen": {"status": "NOT_RUN", "evidence": [], "note": null},
+    "diagnostics_export": {"status": "NOT_RUN", "evidence": [], "note": null},
+    "backup": {"status": "NOT_RUN", "evidence": [], "note": null},
+    "uninstall_preserve": {"status": "NOT_RUN", "evidence": [], "note": null},
+    "reinstall_retention": {"status": "NOT_RUN", "evidence": [], "note": null}
+  },
+  "security": {
+    "credentials_in_artifact": false,
+    "env_file_in_artifact": false,
+    "database_in_artifact": false,
+    "raw_customer_data_in_artifact": false
+  },
+  "result": "BLOCKED",
+  "blocker": "FRESH_WINDOWS_ENVIRONMENT_REQUIRED: provide Windows Sandbox, a disposable Windows 11 VM, or a fresh local profile with Docker Desktop available; current-host extracted-asset proof is not clean-machine proof."
+}

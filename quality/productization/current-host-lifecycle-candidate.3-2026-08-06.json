@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "evidence_scope": "EXTRACTED_CANDIDATE_CURRENT_HOST_LIFECYCLE",
+  "clean_machine_proof": false,
+  "source_checkout_used_for_runtime": false,
+  "artifact": {
+    "path": "dist/productization/FlowProof-Windows-x86_64-0.5.0-productization-candidate.3.zip",
+    "sha256": "7d46dc2905912c10619ce9badb02914021f06bc3a96f5cdb04bbb3c4ffcfcfc6"
+  },
+  "data_root": "C:/Temp/flowproof-appliance-runtime-b71db55ade154c99a9efd0a18a5d5c70",
+  "started_at": "2026-08-06T18:16:30.1236801Z",
+  "stages": [
+    {
+      "name": "install_and_readiness",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:17:35.2193470Z",
+      "evidence": { "persisted_admin_count": 1, "api_http_status": 200, "web_http_status": 200 }
+    },
+    {
+      "name": "launcher_shortcut",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:17:35.3129311Z",
+      "evidence": { "isolated_programs_root": true, "shortcut_created": true }
+    },
+    {
+      "name": "backup",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:17:36.4888969Z",
+      "evidence": { "metadata_sidecar": true, "non_empty": true, "sha256_sidecar": true }
+    },
+    {
+      "name": "sanitized_diagnostics",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:17:37.8823511Z",
+      "evidence": {
+        "exact_generated_secret_scan": "PASS",
+        "required_members": [
+          "appliance-manifest.json",
+          "appliance-state.json",
+          "prerequisites.json",
+          "readiness.json",
+          "service-status.json"
+        ]
+      }
+    },
+    {
+      "name": "restart",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:17:47.1885341Z",
+      "evidence": { "service_health": "READY" }
+    },
+    {
+      "name": "stop_start",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:18:08.0377671Z",
+      "evidence": { "stopped_health": "NOT_READY", "started_health": "READY" }
+    },
+    {
+      "name": "uninstall_preserve_and_reinstall",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:18:35.1003488Z",
+      "evidence": {
+        "persisted_admin_count_before": 1,
+        "persisted_admin_count_after": 1,
+        "data_preserved": true
+      }
+    },
+    {
+      "name": "confirmed_full_delete",
+      "status": "PASS",
+      "checked_at": "2026-08-06T18:18:38.4458263Z",
+      "evidence": { "data_root_absent": true }
+    }
+  ],
+  "completed_at": "2026-08-06T18:18:38.4458263Z",
+  "duration_seconds": 128.324,
+  "verdict": "PASS"
+}

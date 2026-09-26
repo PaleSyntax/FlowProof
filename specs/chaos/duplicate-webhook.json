@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "id": "duplicate_webhook",
+  "title": "Duplicate webhook delivery",
+  "mock_mode": "normal",
+  "deliveries": 2,
+  "same_delivery_id": true,
+  "expected": {
+    "external_invoice_count": 1,
+    "open_incidents": 0,
+    "required_signals": [
+      "duplicate_ingestion_detected"
+    ]
+  },
+  "forbidden": [
+    "second_external_invoice"
+  ]
+}

@@ -1,0 +1,106 @@
+name: Owned container security
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Scan ${{ matrix.component }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - component: api
+            build: true
+            image_ref: ""
+          - component: dashboard
+            build: true
+            image_ref: ""
+          - component: postgres
+            build: false
+            image_ref: postgres:16.14-alpine3.24@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Attest PR merge tree matches head tree
+        if: ${{ github.event_name == 'pull_request' }}
+        shell: bash
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -Eeuo pipefail
+          git fetch --no-tags origin "$PR_HEAD_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$(git rev-parse "$PR_HEAD_SHA^{tree}")"
+          printf 'PR merge-tree %s equals PR head tree %s\n' "$(git rev-parse HEAD)" "$PR_HEAD_SHA"
+      - name: Set image reference
+        if: ${{ matrix.build }}
+        run: echo "IMAGE_REF=flowproof-${{ matrix.component }}:${{ github.sha }}" >> "$GITHUB_ENV"
+      - name: Set runtime image reference
+        if: ${{ !matrix.build }}
+        run: echo "IMAGE_REF=${{ matrix.image_ref }}" >> "$GITHUB_ENV"
+      - name: Verify scoped PostgreSQL VEX policy
+        if: ${{ matrix.component == 'postgres' }}
+        run: bash security/reproduce_postgres_gosu_reachability.sh reports/reproduction
+      - name: Build API image with immutable test tag
+        if: ${{ matrix.component == 'api' }}
+        run: docker build --build-arg VERSION=0.6.0 --build-arg REVISION=${{ github.sha }} -f backend/Dockerfile -t "$IMAGE_REF" .
+      - name: Build dashboard image with immutable test tag
+        if: ${{ matrix.component == 'dashboard' }}
+        run: docker build --build-arg VERSION=0.6.0 --build-arg REVISION=${{ github.sha }} -f frontend/Dockerfile -t "$IMAGE_REF" frontend
+      - name: Prepare sanitized report directory
+        run: mkdir -p reports/raw reports/sanitized
+      - name: Scan image and preserve JSON evidence
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # 0.35.0
+        with:
+          image-ref: ${{ env.IMAGE_REF }}
+          format: json
+          output: reports/raw/${{ matrix.component }}.json
+          exit-code: "0"
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          scan-type: image
+          vuln-type: os,library
+      - name: Validate PostgreSQL raw report scope
+        if: ${{ matrix.component == 'postgres' }}
+        run: python security/validate_postgres_gosu_vex.py --vex security/openvex/postgres-gosu-57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777.json --image-ref "$IMAGE_REF" --report reports/raw/postgres.json --reproduction reports/reproduction/postgres-gosu-reproduction.json --module-metadata reports/reproduction/postgres-gosu-module-download.json --raw reports/reproduction/postgres-gosu-govulncheck.jsonl
+      - name: Normalize JSON, SARIF, and table artifacts
+        run: python security/normalize_trivy_report.py --input reports/raw/${{ matrix.component }}.json --component ${{ matrix.component }} --output-dir reports/sanitized
+      - name: Preserve PostgreSQL reachability reproduction
+        if: ${{ matrix.component == 'postgres' }}
+        run: |
+          cp reports/reproduction/postgres-gosu-reproduction.json reports/sanitized/postgres-gosu-reproduction.json
+          cp reports/reproduction/postgres-gosu-module-download.json reports/sanitized/postgres-gosu-module-download.json
+          cp reports/reproduction/postgres-gosu-govulncheck.jsonl reports/sanitized/postgres-gosu-govulncheck.jsonl
+      - name: Upload sanitized Trivy artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: trivy-${{ matrix.component }}-${{ github.sha }}
+          path: reports/sanitized/
+          if-no-files-found: error
+      - name: Generate SBOM
+        if: ${{ always() }}
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
+        with:
+          image: ${{ env.IMAGE_REF }}
+          artifact-name: flowproof-${{ matrix.component }}-${{ github.sha }}.spdx.json
+
+  aggregate:
+    name: Aggregate owned security gate
+    needs: scan
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: trivy-*
+          path: reports
+          merge-multiple: true
+      - name: Enforce complete FlowProof-owned security evidence
+        run: python security/aggregate_security_reports.py reports

@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "id": "delayed_write",
+  "title": "Persistence occurs after verifier deadline",
+  "mock_mode": "delayed_write",
+  "delay_seconds": 45,
+  "expected": {
+    "incident_opens_after_seconds": 30,
+    "late_observation_recorded": true
+  }
+}

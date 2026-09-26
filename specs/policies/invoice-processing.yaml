@@ -1,0 +1,82 @@
+schema_version: "1.0"
+name: invoice-processing
+version: "1.0.0"
+entity_type: invoice
+
+impact:
+  amount_event: invoice.validated
+  amount_path: $.amount
+  currency_path: $.currency
+
+# Explicitly bounded local/demo authority. These values are not production defaults and
+# must be replaced by owner-reviewed policy plus a selected sandbox contract for a real pilot.
+recovery:
+  action_type: register_missing_invoice
+  guardrails:
+    provider_id: mock-accounting
+    environment: sandbox
+    sandbox_only: true
+    allowed_currencies: [RUB]
+    maximum_amount_minor: 10000000
+    amount_scale: 2
+    maximum_semantic_write_attempts: 1
+    approval_ttl_seconds: 900
+    reconciliation_method: authoritative_invoice_reread
+
+invariants:
+  - id: approval_before_registration
+    type: ordering
+    severity: high
+    description: Invoice registration must be requested only after approval.
+    before: invoice.approved
+    after: invoice.registration_requested
+
+  - id: registration_ack_exactly_once
+    type: exactly_once
+    severity: high
+    description: Accounting registration acknowledgement must occur exactly once.
+    event: invoice.registration_acknowledged
+    after: invoice.registration_requested
+    within: 30s
+
+  - id: external_invoice_exists
+    type: external_assertion
+    severity: critical
+    description: The authoritative accounting system must contain exactly one invoice after acknowledging registration.
+    after: invoice.registration_acknowledged
+    within: 30s
+    verifier: mock_accounting_invoice
+    expect:
+      exists: true
+      unique: true
+      fields:
+        amount:
+          equals_event:
+            event: invoice.validated
+            path: $.amount
+          tolerance: 0.01
+        currency:
+          equals_event:
+            event: invoice.validated
+            path: $.currency
+    recovery_action: register_missing_invoice
+
+  - id: process_completes
+    type: eventually
+    severity: high
+    description: A verified invoice must complete within the business SLA.
+    after: invoice.registration_acknowledged
+    expect: invoice.verified
+    within: 60s
+
+  - id: validated_amount_matches_registered_amount
+    type: value_matches
+    severity: critical
+    description: Registered amount must match the validated invoice amount.
+    left:
+      event: invoice.validated
+      path: $.amount
+    right:
+      event: invoice.verified
+      path: $.amount
+    tolerance: 0.01

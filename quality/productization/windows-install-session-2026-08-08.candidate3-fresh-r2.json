@@ -1,0 +1,8 @@
+{
+    "schema_version":  "1.0",
+    "result":  "FAIL",
+    "session_id":  "dc58bd5e-1b4a-4913-a081-3119e2f9ecf0",
+    "failed_at":  "2026-08-08T09:41:19.2747537Z",
+    "error_type":  "RuntimeException",
+    "message":  "DOCKER_DESKTOP_NOT_RUNNING: Docker Desktop is installed but its Linux engine is not ready."
+}

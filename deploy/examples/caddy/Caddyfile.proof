@@ -1,0 +1,29 @@
+# CI fixture, not a production configuration. It allows the Linux deployment
+# proof to exercise secure session cookies across an external edge boundary.
+{
+    auto_https disable_redirects
+}
+
+https://caddy, https://localhost {
+    tls internal
+    handle /api/* {
+        reverse_proxy api:8000 {
+            header_up X-Request-ID {http.request.header.X-Request-ID}
+            header_up X-Forwarded-For {http.request.remote.host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    handle /health/live {
+        reverse_proxy api:8000
+    }
+    handle /health/ready {
+        reverse_proxy api:8000
+    }
+    handle /smoke/mock/* {
+        uri strip_prefix /smoke/mock
+        reverse_proxy mock-accounting:8001
+    }
+    handle {
+        reverse_proxy web:8080
+    }
+}

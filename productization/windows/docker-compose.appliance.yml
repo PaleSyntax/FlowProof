@@ -1,0 +1,197 @@
+x-logging: &logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-app-common: &app-common
+  image: ${FLOWPROOF_API_IMAGE:?FLOWPROOF_API_IMAGE is required}
+  environment: &app-environment
+    FLOWPROOF_ENV: local-appliance
+    FLOWPROOF_TOKEN_PEPPER_FILE: /run/secrets/token_pepper
+    FLOWPROOF_DATABASE_HOST: postgres
+    FLOWPROOF_DATABASE_PORT: "5432"
+    FLOWPROOF_DATABASE_NAME: flowproof
+    FLOWPROOF_DATABASE_USER: flowproof
+    POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    FLOWPROOF_CORS_ORIGIN: http://127.0.0.1:8080
+    FLOWPROOF_MOCK_ACCOUNTING_URL: http://mock-accounting:8001
+    FLOWPROOF_POLICY_PATH: /app/specs/policies/invoice-processing.yaml
+    FLOWPROOF_PROVIDER_CONTRACT_PATH: /app/specs/providers/mock-accounting/contract.json
+    FLOWPROOF_RECOVERY_WRITES_ENABLED: "true"
+    FLOWPROOF_FIXTURE_DEMO_ENABLED: "true"
+    FLOWPROOF_XERO_PKCE_ENABLED: "true"
+    FLOWPROOF_XERO_PROVIDER_CONTRACT_PATH: /app/specs/providers/xero-demo/contract.json
+    FLOWPROOF_XERO_REDIRECT_URI: http://localhost:8000/api/v1/provider-connections/xero/callback
+    FLOWPROOF_SESSION_COOKIE_SECURE: "false"
+    FLOWPROOF_ENABLE_LEGACY_HEADER_AUTH: "false"
+    FLOWPROOF_SCHEDULER_POLL_SECONDS: "2"
+    FLOWPROOF_SCHEDULER_LEASE_SECONDS: "30"
+    FLOWPROOF_SCHEDULER_MAX_ATTEMPTS: "5"
+    FLOWPROOF_SCHEDULER_RETRY_BASE_SECONDS: "2"
+  secrets: &app-secrets
+    - token_pepper
+    - postgres_password
+  networks:
+    - database
+    - application
+  read_only: true
+  tmpfs:
+    - /tmp:rw,noexec,nosuid,size=64m
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  user: "10001:10001"
+  logging: *logging
+
+services:
+  postgres:
+    image: ${FLOWPROOF_POSTGRES_IMAGE:?FLOWPROOF_POSTGRES_IMAGE is required}
+    environment:
+      POSTGRES_DB: flowproof
+      POSTGRES_USER: flowproof
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    volumes:
+      - type: bind
+        source: ${FLOWPROOF_POSTGRES_DATA_DIR:?FLOWPROOF_POSTGRES_DATA_DIR is required}
+        target: /var/lib/postgresql/data
+    networks:
+      - database
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flowproof -d flowproof"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+
+  mock-accounting:
+    image: ${FLOWPROOF_MOCK_IMAGE:?FLOWPROOF_MOCK_IMAGE is required}
+    networks:
+      - application
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    user: "10001:10001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+    logging: *logging
+
+  migrate:
+    <<: *app-common
+    command: ["python", "-m", "flowproof.deployment", "migrate"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    <<: *app-common
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      mock-accounting:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/live')"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  scheduler:
+    <<: *app-common
+    command: ["python", "-m", "flowproof.scheduler"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      mock-accounting:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-m", "flowproof.healthcheck", "--service", "scheduler"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  alert-worker:
+    <<: *app-common
+    command: ["python", "-m", "flowproof.alerts"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-m", "flowproof.healthcheck", "--service", "alert-worker"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  ops-watcher:
+    <<: *app-common
+    command: ["python", "-m", "flowproof.ops_watcher"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-m", "flowproof.healthcheck", "--service", "ops-watcher"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  web:
+    image: ${FLOWPROOF_WEB_IMAGE:?FLOWPROOF_WEB_IMAGE is required}
+    networks:
+      - application
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+      - /var/cache/nginx:rw,noexec,nosuid,size=16m
+      - /var/run:rw,noexec,nosuid,size=8m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    ports:
+      - "127.0.0.1:8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/ || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+    logging: *logging
+
+networks:
+  database:
+    internal: true
+  application:
+
+secrets:
+  token_pepper:
+    file: ${FLOWPROOF_SECRETS_DIR:?FLOWPROOF_SECRETS_DIR is required}/token_pepper
+  postgres_password:
+    file: ${FLOWPROOF_SECRETS_DIR:?FLOWPROOF_SECRETS_DIR is required}/postgres_password

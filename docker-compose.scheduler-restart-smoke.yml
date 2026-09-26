@@ -1,0 +1,18 @@
+services:
+  scheduler:
+    # Used only by scripts/run_scheduler_restart_smoke.ps1 to create one self-contained crash.
+    # The marker remains in this container's writable layer across Docker's automatic restart.
+    command:
+      - sh
+      - -ec
+      - |
+        marker=/tmp/flowproof-scheduler-restart-smoke
+        if [ ! -e "$$marker" ]; then
+          : > "$$marker"
+          python -m flowproof.scheduler &
+          worker_pid=$$!
+          sleep 11
+          kill -KILL "$$worker_pid"
+          wait "$$worker_pid"
+        fi
+        exec python -m flowproof.scheduler

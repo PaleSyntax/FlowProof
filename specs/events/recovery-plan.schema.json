@@ -1,0 +1,412 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/recovery-plan.schema.json",
+  "title": "FlowProof Recovery Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "incident_id",
+    "action_type",
+    "parameters",
+    "idempotency_key",
+    "risk_level",
+    "requires_approval",
+    "status",
+    "plan_hash",
+    "provider_id",
+    "provider_environment",
+    "adapter_version",
+    "provider_contract_digest",
+    "provider_contract_snapshot",
+    "guardrails",
+    "approved_by",
+    "approval_context",
+    "approved_at",
+    "approval_expires_at",
+    "executed_at",
+    "verified_at",
+    "result"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "incident_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "action_type": {
+      "const": "register_missing_invoice"
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "risk_level": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requires_approval": {
+      "const": true
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "approved",
+        "executing",
+        "verifying",
+        "still_failed",
+        "verified",
+        "rejected",
+        "failed",
+        "needs_attention",
+        "superseded"
+      ]
+    },
+    "plan_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "provider_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "provider_environment": {
+      "enum": [
+        "sandbox",
+        "partner_test"
+      ]
+    },
+    "adapter_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "provider_contract_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "provider_contract_snapshot": {
+      "type": "object"
+    },
+    "guardrails": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider_id",
+        "environment",
+        "sandbox_only",
+        "entity_type",
+        "entity_id",
+        "action_type",
+        "allowed_currencies",
+        "maximum_amount_minor",
+        "amount_scale",
+        "observed_amount_minor",
+        "maximum_semantic_write_attempts",
+        "maximum_transport_invocations",
+        "approval_ttl_seconds",
+        "provider_contract_digest",
+        "reconciliation_method",
+        "batch_allowed",
+        "wildcards_allowed"
+      ],
+      "properties": {
+        "provider_id": {
+          "type": "string"
+        },
+        "environment": {
+          "enum": [
+            "sandbox",
+            "partner_test"
+          ]
+        },
+        "sandbox_only": {
+          "const": true
+        },
+        "entity_type": {
+          "const": "invoice"
+        },
+        "entity_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action_type": {
+          "const": "register_missing_invoice"
+        },
+        "allowed_currencies": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "maximum_amount_minor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "amount_scale": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "observed_amount_minor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maximum_semantic_write_attempts": {
+          "const": 1
+        },
+        "maximum_transport_invocations": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "approval_ttl_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "provider_contract_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "reconciliation_method": {
+          "const": "authoritative_invoice_reread"
+        },
+        "batch_allowed": {
+          "const": false
+        },
+        "wildcards_allowed": {
+          "const": false
+        }
+      }
+    },
+    "approved_by": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "approval_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "actor_principal_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "actor_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "const": "recovery:approve"
+        },
+        "incident_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "incident_status": {
+          "const": "recovery_proposed"
+        },
+        "plan_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "provider_contract_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "guardrail_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "approval_expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "approval_decision_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "approved_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "approval_expires_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "executed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "verified_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "result": {
+      "type": "object"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "approved",
+              "executing",
+              "verifying",
+              "still_failed",
+              "verified"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "approved_by": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approved_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "approval_expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "approval_context": {
+            "required": [
+              "actor_principal_id",
+              "actor_name",
+              "scope",
+              "incident_id",
+              "incident_status",
+              "plan_hash",
+              "provider_contract_digest",
+              "guardrail_digest",
+              "approval_expires_at",
+              "approval_decision_id"
+            ]
+          }
+        },
+        "required": [
+          "approved_by",
+          "approved_at",
+          "approval_expires_at"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "verifying",
+              "still_failed",
+              "verified"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "executed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "executed_at"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "verified"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "verified_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "verified_at"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "superseded"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "approved_by": {
+            "type": "null"
+          },
+          "approved_at": {
+            "type": "null"
+          },
+          "approval_expires_at": {
+            "type": "null"
+          },
+          "executed_at": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "approved_by",
+          "approved_at",
+          "approval_expires_at",
+          "executed_at"
+        ]
+      }
+    }
+  ]
+}

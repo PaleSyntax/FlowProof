@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "result": "NOT_RUN",
+  "session_id": null,
+  "started_at": null,
+  "completed_at": null,
+  "provider": {
+    "provider_id": null,
+    "environment": null,
+    "adapter_version": null,
+    "contract_version": null,
+    "contract_sha256": null,
+    "evidence_classification": null
+  },
+  "safe_entity": {
+    "entity_type": "invoice",
+    "entity_id": null,
+    "expected_exists": null,
+    "expected_amount": null,
+    "currency": null,
+    "contains_customer_data": false
+  },
+  "observation": {
+    "classification": null,
+    "content_digest": null,
+    "records": [],
+    "invariant_id": "external_invoice_exists",
+    "invariant_result": null,
+    "incident_id": null
+  },
+  "operator_review": {
+    "operator_name": null,
+    "operator_role": null,
+    "reviewed_at": null,
+    "decision": null,
+    "provider_identity_confirmed": null,
+    "entity_confirmed": null,
+    "evidence_bounded": null,
+    "no_mutation_confirmed": null
+  },
+  "safety": {
+    "permitted_methods": ["GET"],
+    "provider_mutation_count": 0,
+    "recovery_writes_enabled": false,
+    "raw_secret_persisted": false,
+    "raw_customer_payload_persisted": false,
+    "manual_secret_copy_required": false,
+    "refresh_token_persisted": false
+  },
+  "evidence": []
+}

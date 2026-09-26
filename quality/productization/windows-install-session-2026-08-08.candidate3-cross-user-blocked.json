@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "session_id": "80d161fd-c122-4c8f-a8d4-bedef151c770",
+  "started_at": null,
+  "completed_at": "2026-08-08T09:57:31.2214869Z",
+  "tester_role": "Codex parent-process review of disposable local Windows profile attempts",
+  "environment": {
+    "windows_version": "Windows 10.0.22631.0",
+    "architecture": "x86_64",
+    "profile_type": "fresh_local_profile",
+    "source_checkout_present": false,
+    "preinstalled_tools": [
+      "Docker Desktop"
+    ]
+  },
+  "artifact": {
+    "filename": "FlowProof-Windows-x86_64-0.5.0-productization-candidate.3.zip",
+    "sha256": "7d46dc2905912c10619ce9badb02914021f06bc3a96f5cdb04bbb3c4ffcfcfc6",
+    "git_commit": "da9057ac21be3fa7ac7e88d19bca9abc509abac9",
+    "git_tree": "f88908bf75dcd336e2df33a2907c6a53c313725d"
+  },
+  "metrics": {
+    "download_to_running_seconds": null,
+    "running_to_first_demo_outcome_seconds": null,
+    "mandatory_decision_count": null,
+    "terminal_command_count": 0,
+    "manual_secret_handoff_count": 0,
+    "support_intervention_count": 0,
+    "install_failure_count": 3
+  },
+  "stages": {
+    "prerequisite_check": {
+      "status": "PASS",
+      "evidence": [
+        "candidate3-probe: administrator, LocalAccounts, docker-users and evidence-write checks passed",
+        "Docker prerequisite completed before install"
+      ],
+      "note": "The observable parent launcher and elevated prerequisite path work."
+    },
+    "install": {
+      "status": "BLOCKED",
+      "evidence": [
+        "r3: bind mount of the disposable profile data root returned Access is denied",
+        "r4: bind mount of the private postgres_password file returned Access is denied",
+        "r5: bind mount stat failed after temporary root ACL and qualification-only SkipAcl",
+        "post-attempt users=0 profiles=0 staging=0 containers=0 networks=0 volumes=0"
+      ],
+      "note": "Docker Desktop is running under the original interactive account and cannot mount the temporary account's private profile path."
+    },
+    "first_open": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "safe_demo": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "restart_reopen": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "diagnostics_export": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "backup": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "uninstall_preserve": { "status": "NOT_RUN", "evidence": [], "note": null },
+    "reinstall_retention": { "status": "NOT_RUN", "evidence": [], "note": null }
+  },
+  "security": {
+    "credentials_in_artifact": false,
+    "env_file_in_artifact": false,
+    "database_in_artifact": false,
+    "raw_customer_data_in_artifact": false
+  },
+  "result": "BLOCKED",
+  "blocker": "FRESH_LOCAL_PROFILE_CROSS_USER_DOCKER_BIND_MOUNT_UNAVAILABLE: use a disposable Windows 11 VM, or sign in as the fresh tester and run Docker Desktop under that same account."
+}

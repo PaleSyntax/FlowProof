@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "id": "amount_mismatch",
+  "title": "External invoice amount differs",
+  "mock_mode": "amount_mismatch",
+  "delta": 100,
+  "expected": {
+    "open_incident_invariant": "external_invoice_exists",
+    "evidence_contains": [
+      "expected.amount",
+      "actual.amount"
+    ]
+  }
+}

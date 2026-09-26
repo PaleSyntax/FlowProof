@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/observe-only-provider-lifecycle.schema.json",
+  "title": "FlowProof real-provider observe-only lifecycle evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "result",
+    "session_id",
+    "started_at",
+    "completed_at",
+    "provider",
+    "safe_entity",
+    "observation",
+    "operator_review",
+    "safety",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "result": {"enum": ["NOT_RUN", "PASS", "FAIL", "BLOCKED_EXTERNAL"]},
+    "session_id": {"type": ["string", "null"], "format": "uuid"},
+    "started_at": {"type": ["string", "null"], "format": "date-time"},
+    "completed_at": {"type": ["string", "null"], "format": "date-time"},
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_id", "environment", "adapter_version", "contract_version", "contract_sha256", "evidence_classification"],
+      "properties": {
+        "provider_id": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+        "environment": {"type": ["string", "null"], "enum": ["sandbox", "partner_test", null]},
+        "adapter_version": {"type": ["string", "null"], "minLength": 1, "maxLength": 64},
+        "contract_version": {"type": ["string", "null"], "minLength": 1, "maxLength": 64},
+        "contract_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "evidence_classification": {"type": ["string", "null"], "enum": ["LIVE_SANDBOX_OBSERVED", null]}
+      }
+    },
+    "safe_entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_type", "entity_id", "expected_exists", "expected_amount", "currency", "contains_customer_data"],
+      "properties": {
+        "entity_type": {"const": "invoice"},
+        "entity_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 255},
+        "expected_exists": {"type": ["boolean", "null"]},
+        "expected_amount": {"type": ["number", "null"], "minimum": 0},
+        "currency": {"type": ["string", "null"], "pattern": "^[A-Z]{3}$"},
+        "contains_customer_data": {"const": false}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "content_digest", "records", "invariant_id", "invariant_result", "incident_id"],
+      "properties": {
+        "classification": {
+          "type": ["string", "null"],
+          "enum": ["AVAILABLE_PRESENT", "AVAILABLE_ABSENT", "AVAILABLE_CONFLICT", "AUTHENTICATION_FAILED", "RATE_LIMITED", "TEMPORARILY_UNAVAILABLE", "MALFORMED_RESPONSE", "PERMANENT_PROVIDER_ERROR", null]
+        },
+        "content_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "records": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["invoice_id", "amount", "currency", "status"],
+            "properties": {
+              "invoice_id": {"type": "string", "minLength": 1, "maxLength": 255},
+              "amount": {"type": "number"},
+              "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+              "status": {"type": "string", "minLength": 1, "maxLength": 255}
+            }
+          }
+        },
+        "invariant_id": {"type": ["string", "null"], "const": "external_invoice_exists"},
+        "invariant_result": {"type": ["string", "null"], "enum": ["PASSED", "VIOLATED", "ERROR", null]},
+        "incident_id": {"type": ["string", "null"], "format": "uuid"}
+      }
+    },
+    "operator_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operator_name", "operator_role", "reviewed_at", "decision", "provider_identity_confirmed", "entity_confirmed", "evidence_bounded", "no_mutation_confirmed"],
+      "properties": {
+        "operator_name": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
+        "operator_role": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
+        "reviewed_at": {"type": ["string", "null"], "format": "date-time"},
+        "decision": {"type": ["string", "null"], "enum": ["REVIEWED", "CONTESTED", null]},
+        "provider_identity_confirmed": {"type": ["boolean", "null"]},
+        "entity_confirmed": {"type": ["boolean", "null"]},
+        "evidence_bounded": {"type": ["boolean", "null"]},
+        "no_mutation_confirmed": {"type": ["boolean", "null"]}
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["permitted_methods", "provider_mutation_count", "recovery_writes_enabled", "raw_secret_persisted", "raw_customer_payload_persisted", "manual_secret_copy_required", "refresh_token_persisted"],
+      "properties": {
+        "permitted_methods": {"const": ["GET"]},
+        "provider_mutation_count": {"type": "integer", "minimum": 0},
+        "recovery_writes_enabled": {"type": "boolean"},
+        "raw_secret_persisted": {"type": "boolean"},
+        "raw_customer_payload_persisted": {"type": "boolean"},
+        "manual_secret_copy_required": {"type": "boolean"},
+        "refresh_token_persisted": {"type": "boolean"}
+      }
+    },
+    "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"result": {"const": "PASS"}}, "required": ["result"]},
+      "then": {
+        "properties": {
+          "session_id": {"type": "string"},
+          "started_at": {"type": "string"},
+          "completed_at": {"type": "string"},
+          "provider": {
+            "properties": {
+              "provider_id": {"type": "string", "not": {"const": "mock-accounting"}},
+              "environment": {"enum": ["sandbox", "partner_test"]},
+              "adapter_version": {"type": "string"},
+              "contract_version": {"type": "string"},
+              "contract_sha256": {"type": "string"},
+              "evidence_classification": {"const": "LIVE_SANDBOX_OBSERVED"}
+            }
+          },
+          "safe_entity": {"properties": {
+            "entity_id": {"type": "string"},
+            "expected_exists": {"type": "boolean"},
+            "expected_amount": {"type": "number"},
+            "currency": {"type": "string"}
+          }},
+          "observation": {
+            "properties": {
+              "classification": {"enum": ["AVAILABLE_PRESENT", "AVAILABLE_ABSENT", "AVAILABLE_CONFLICT"]},
+              "content_digest": {"type": "string"},
+              "invariant_id": {"const": "external_invoice_exists"},
+              "invariant_result": {"enum": ["PASSED", "VIOLATED"]}
+            }
+          },
+          "operator_review": {
+            "properties": {
+              "operator_name": {"type": "string"},
+              "operator_role": {"type": "string"},
+              "reviewed_at": {"type": "string"},
+              "decision": {"const": "REVIEWED"},
+              "provider_identity_confirmed": {"const": true},
+              "entity_confirmed": {"const": true},
+              "evidence_bounded": {"const": true},
+              "no_mutation_confirmed": {"const": true}
+            }
+          },
+          "safety": {
+            "properties": {
+              "provider_mutation_count": {"const": 0},
+              "recovery_writes_enabled": {"const": false},
+              "raw_secret_persisted": {"const": false},
+              "raw_customer_payload_persisted": {"const": false},
+              "manual_secret_copy_required": {"const": false},
+              "refresh_token_persisted": {"const": false}
+            }
+          },
+          "evidence": {"minItems": 1}
+        }
+      }
+    }
+  ]
+}

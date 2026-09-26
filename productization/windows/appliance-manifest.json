@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "application_version": "0.6.0",
+  "artifact_status": "DEVELOPMENT_UNBUILT",
+  "git_commit": null,
+  "git_tree": null,
+  "git_coordinate_scope": "DEVELOPMENT_WORKTREE",
+  "candidate_source_sha256": null,
+  "built_at": null,
+  "update_contract": {
+    "channel": "0.6.0",
+    "target_version": null,
+    "accepted_from": ["0.5.0-productization-candidate.4"],
+    "database_schema": "0010_release_groundwork_fencing",
+    "rollback_scope": "SAME_SCHEMA_CONFIGURATION_AND_SERVICES"
+  },
+  "image_bundle": null,
+  "code_signing": "UNSIGNED_DEVELOPMENT",
+  "images": {
+    "api": "flowproof-api:productization-local",
+    "web": "flowproof-web:productization-local",
+    "mock_accounting": "flowproof-mock-accounting:productization-local",
+    "postgres": "postgres:16.14-alpine3.24@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777"
+  },
+  "evidence_classification": "TEST_FIXTURE_ONLY",
+  "recovery_write_boundary": "MOCK_ACCOUNTING_FIXTURE_ONLY"
+}

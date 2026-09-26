@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/operator-review.schema.json",
+  "title": "FlowProof bounded operator contestability review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plan_hash", "capsule_digest", "evidence_understood",
+    "authoritative_source_understood", "blast_radius_understood",
+    "proposed_action_understood", "reject_path_available", "revoke_path_available",
+    "reconciliation_path_understood", "final_decision", "note"
+  ],
+  "properties": {
+    "plan_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "capsule_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "evidence_understood": {"type": "boolean"},
+    "authoritative_source_understood": {"type": "boolean"},
+    "blast_radius_understood": {"type": "boolean"},
+    "proposed_action_understood": {"type": "boolean"},
+    "reject_path_available": {"type": "boolean"},
+    "revoke_path_available": {"type": "boolean"},
+    "reconciliation_path_understood": {"type": "boolean"},
+    "final_decision": {"enum": ["approve", "reject", "revoke_approval", "observe_only"]},
+    "note": {"type": ["string", "null"], "minLength": 1, "maxLength": 500}
+  }
+}

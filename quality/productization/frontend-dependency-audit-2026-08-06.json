@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "checked_at": "2026-08-06",
+  "package_manager": "npm",
+  "lockfile": "frontend/package-lock.json",
+  "production_audit": {
+    "command": "npm audit --omit=dev --json",
+    "exit_code": 0,
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "full_development_audit": {
+    "command": "npm audit --json",
+    "exit_code": 1,
+    "high_dependency_nodes": 14,
+    "root_advisory": "GHSA-rgw5-rvv9-x895",
+    "affected_package": "brace-expansion",
+    "installed_version": "5.0.8",
+    "dependency_path": "eslint -> minimatch -> brace-expansion",
+    "runtime_bundled": false,
+    "fix_available_from_current_lock_graph": false
+  },
+  "decision": "NO_DEPENDENCY_CHANGE",
+  "rationale": [
+    "The production dependency audit is clean.",
+    "The affected path is restricted to the lint development toolchain.",
+    "npm reports no available compatible fix and the registry latest observed version is still 5.0.8.",
+    "The residual advisory remains documented and must be rechecked before final qualification."
+  ]
+}

@@ -1,0 +1,31 @@
+# Linux CI fixture only. Caddy is an environment-owned edge exercised outside
+# the FlowProof core Compose file; this fixture is never a supported topology.
+services:
+  api:
+    environment:
+      # The production base remains fail-closed. This isolated proof fixture
+      # explicitly exercises an approved recovery against mock-accounting.
+      FLOWPROOF_DEPLOYMENT_PROOF_RECOVERY_WRITES_AUTHORIZED: "true"
+      FLOWPROOF_RECOVERY_WRITES_ENABLED: "true"
+
+  caddy:
+    image: caddy:2.11.3-alpine@sha256:86deaf5e3d3408a6ccec08fbb79989783dd26e206ae10bcf78a801dc8c9ab794
+    profiles: ["proof-edge"]
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+    environment:
+      FLOWPROOF_PROOF_EDGE_HOST: caddy
+    ports:
+      - "127.0.0.1:${FLOWPROOF_PROOF_HTTPS_PORT:?FLOWPROOF_PROOF_HTTPS_PORT is required}:443"
+    volumes:
+      - ./deploy/examples/caddy/Caddyfile.proof:/etc/caddy/Caddyfile:ro
+    networks:
+      - application
+    tmpfs:
+      - /data:rw,noexec,nosuid,size=16m
+      - /config:rw,noexec,nosuid,size=16m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE

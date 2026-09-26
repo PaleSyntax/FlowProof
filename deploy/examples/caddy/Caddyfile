@@ -1,0 +1,52 @@
+# Environment-owned example only. Copy and review this in the ingress owner's
+# repository; FlowProof does not build, publish, or certify this Caddy image.
+http://{$FLOWPROOF_EDGE_HOST} {
+    redir https://{host}{uri} permanent
+}
+
+https://{$FLOWPROOF_EDGE_HOST} {
+    request_body {
+        max_size {$FLOWPROOF_EDGE_MAX_BODY:64KiB}
+    }
+
+    @private_metrics remote_ip {$FLOWPROOF_METRICS_SOURCE_CIDRS:127.0.0.1/32}
+    handle @private_metrics {
+        reverse_proxy {$FLOWPROOF_PRIVATE_METRICS_UPSTREAM} {
+            header_up X-Request-ID {http.request.header.X-Request-ID}
+            header_up X-Forwarded-For {http.request.remote.host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    handle /metrics {
+        respond "not found" 404
+    }
+
+    handle /api/* {
+        reverse_proxy {$FLOWPROOF_API_UPSTREAM} {
+            header_up X-Request-ID {http.request.header.X-Request-ID}
+            header_up X-Forwarded-For {http.request.remote.host}
+            header_up X-Forwarded-Proto {scheme}
+            transport http {
+                read_timeout {$FLOWPROOF_EDGE_READ_TIMEOUT:30s}
+                write_timeout {$FLOWPROOF_EDGE_WRITE_TIMEOUT:30s}
+            }
+        }
+    }
+    handle /health/live {
+        reverse_proxy {$FLOWPROOF_API_UPSTREAM}
+    }
+    handle /health/ready {
+        reverse_proxy {$FLOWPROOF_API_UPSTREAM}
+    }
+    handle {
+        reverse_proxy {$FLOWPROOF_WEB_UPSTREAM} {
+            header_up X-Request-ID {http.request.header.X-Request-ID}
+            header_up X-Forwarded-For {http.request.remote.host}
+            header_up X-Forwarded-Proto {scheme}
+            transport http {
+                read_timeout {$FLOWPROOF_EDGE_READ_TIMEOUT:30s}
+                write_timeout {$FLOWPROOF_EDGE_WRITE_TIMEOUT:30s}
+            }
+        }
+    }
+}

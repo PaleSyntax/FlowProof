@@ -1,0 +1,54 @@
+name: External dependency advisory
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  advisory:
+    name: Environment-owned reference report (${{ matrix.component }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - component: n8n
+            image_ref: n8nio/n8n:2.30.5@sha256:450853cd21a2ce36587c4c860eb26927c1ceba9496bf55f4c213b5d3a6dc8c6f
+          - component: caddy-example
+            image_ref: caddy:2.11.3-alpine@sha256:86deaf5e3d3408a6ccec08fbb79989783dd26e206ae10bcf78a801dc8c9ab794
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Create advisory evidence directory
+        run: mkdir -p reports/raw reports/sanitized
+      - name: Scan environment-owned reference image without suppression
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # 0.35.0
+        with:
+          image-ref: ${{ matrix.image_ref }}
+          format: json
+          output: reports/raw/${{ matrix.component }}.json
+          exit-code: "0"
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          scan-type: image
+          vuln-type: os,library
+      - name: Normalize advisory report
+        run: python security/normalize_trivy_report.py --input reports/raw/${{ matrix.component }}.json --component ${{ matrix.component }} --output-dir reports/sanitized
+      - name: Write ownership notice
+        run: >-
+          printf '%s\n' 'This is an advisory for environment-owned n8n/ingress references. It is not a FlowProof security PASS; the deployment owner must assess exact selected versions.'
+          > reports/sanitized/OWNERSHIP.txt
+      - name: Upload advisory reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: external-advisory-${{ matrix.component }}-${{ github.sha }}
+          path: reports/
+          if-no-files-found: error
+      - name: Generate reference SBOM
+        if: ${{ always() }}
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
+        with:
+          image: ${{ matrix.image_ref }}
+          artifact-name: external-advisory-${{ matrix.component }}-${{ github.sha }}.spdx.json

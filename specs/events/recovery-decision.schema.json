@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/recovery-decision.schema.json",
+  "title": "FlowProof append-only recovery decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "recovery_plan_id",
+    "incident_id",
+    "request_id",
+    "action",
+    "decision_kind",
+    "actor_principal_id",
+    "actor_display_name",
+    "authorization_scope",
+    "plan_hash",
+    "provider_contract_digest",
+    "incident_state_observed",
+    "plan_state_observed",
+    "reason_code",
+    "note_digest",
+    "previous_plan_state",
+    "resulting_plan_state",
+    "previous_incident_state",
+    "resulting_incident_state",
+    "decided_at",
+    "approval_expires_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "recovery_plan_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "incident_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "action": {
+      "enum": [
+        "approve",
+        "reject",
+        "revoke_approval",
+        "approval_expired",
+        "approval_invalidated",
+        "retry_reapproval_required",
+        "prepared_reapproval_required",
+        "plan_binding_superseded",
+        "external_resolution"
+      ]
+    },
+    "decision_kind": {
+      "enum": [
+        "human",
+        "system"
+      ]
+    },
+    "actor_principal_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "actor_display_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "authorization_scope": {
+      "enum": [
+        "recovery:approve",
+        "system:approval_lifecycle"
+      ]
+    },
+    "plan_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "provider_contract_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "incident_state_observed": {
+      "type": "string"
+    },
+    "plan_state_observed": {
+      "type": "string"
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,63}$"
+    },
+    "note_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "previous_plan_state": {
+      "type": "string"
+    },
+    "resulting_plan_state": {
+      "type": "string"
+    },
+    "previous_incident_state": {
+      "type": "string"
+    },
+    "resulting_incident_state": {
+      "type": "string"
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "approval_expires_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

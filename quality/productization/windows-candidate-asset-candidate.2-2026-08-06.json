@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "evidence_scope": "EXTRACTED_CANDIDATE_CURRENT_HOST_PLUS_REAL_N8N_LOCAL_QUALIFICATION",
+  "fresh_machine_proof": false,
+  "candidate": {
+    "filename": "FlowProof-Windows-x86_64-0.5.0-productization-candidate.2.zip",
+    "bytes": 262522145,
+    "sha256": "00454dc55b27e8a05b2264733cf09ff0918d8a79df4490fb909386ee71675ac1",
+    "file_member_count": 15,
+    "unexpected_sensitive_member_count": 0,
+    "artifact_status": "UNSIGNED_CANDIDATE",
+    "code_signing": "UNSIGNED_SMARTSCREEN_GATE",
+    "git_commit": "da9057ac21be3fa7ac7e88d19bca9abc509abac9",
+    "git_tree": "f88908bf75dcd336e2df33a2907c6a53c313725d",
+    "git_coordinate_scope": "BASE_COMMIT_AND_TREE_WITH_WORKTREE_CANDIDATE_DIGEST",
+    "candidate_source_sha256": "7e3bbabe9ef49574118ece70632b3bcf0783cb5b0ca1cd2c44bd35bc514f3198"
+  },
+  "candidate_source_inventory": {
+    "filename": "candidate-source-inventory.json",
+    "file_count": 14,
+    "image_count": 4,
+    "recomputed_digest_match": true
+  },
+  "image_bundle": {
+    "filename": "flowproof-images.tar",
+    "sha256": "f8136674c4994131bc790bc279fab9276e8224dbfec2b3715519a6fe2b2d6f35",
+    "format": "docker-image-save-tar",
+    "image_count": 4,
+    "docker_load_result": "PASS",
+    "images": [
+      { "reference": "flowproof-api:productization-local", "id": "sha256:350c02719a4e268020b018958bbbf06fe1ced3b77280103ba5ee930b7837b59f" },
+      { "reference": "flowproof-web:productization-local", "id": "sha256:3d6496a038d106f1825fe4432f4b9c362e8979925cd7c2a17a83601f70f08611" },
+      { "reference": "flowproof-mock-accounting:productization-local", "id": "sha256:368d13b189a14837272a97cd7bb43f6a27f9ba39664d2037d357651c317afb65" },
+      { "reference": "postgres:16.14-alpine3.24@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777", "id": "sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777" }
+    ]
+  },
+  "lifecycle": {
+    "source_checkout_used_for_runtime": false,
+    "duration_seconds": 149.56,
+    "verdict": "PASS",
+    "stage_count": 8,
+    "passed_stage_count": 8,
+    "confirmed_full_delete": true
+  },
+  "n8n_guided_connection": {
+    "source_checkout_used_for_runtime": false,
+    "n8n_version": "2.30.5",
+    "workflow_count": 4,
+    "published_workflow_count": 3,
+    "credential_count": 1,
+    "timeline_event_count": 2,
+    "manual_flowproof_token_copying": false,
+    "n8n_api_key_persisted_by_flowproof": false,
+    "cleanup_pass": true,
+    "result": "PASS"
+  },
+  "truth_boundary": {
+    "real_n8n_execution_proven": true,
+    "fixture_evidence_classification": "LOCAL_REAL_N8N_TEST_FIXTURE_ONLY",
+    "real_provider_proven": false,
+    "fresh_machine_proven": false,
+    "signed_asset_proven": false,
+    "github_release_download_proven": false
+  }
+}

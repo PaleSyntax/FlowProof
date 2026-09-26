@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_version": "1.0",
+  "evidence_scope": "CURRENT_HOST_LIFECYCLE_ONLY",
+  "clean_machine_proof": false,
+  "source_checkout": true,
+  "source_head": "da9057ac21be3fa7ac7e88d19bca9abc509abac9",
+  "working_tree_changes_present": true,
+  "host": {
+    "os": "Windows 11 23H2",
+    "build": "22631.6060",
+    "powershell": "5.1.22621.6060",
+    "docker_desktop": "4.83",
+    "docker_engine": "29.6.2",
+    "docker_compose": "5.3.1",
+    "docker_backend": "linux-x86_64-wsl2"
+  },
+  "images": [
+    {
+      "tag": "flowproof-api:productization-local",
+      "id": "sha256:3c3d689cb5731aed7c382a5811468e77c2a7d860411c816c0c4dba402f8212be",
+      "size_bytes": 87699602
+    },
+    {
+      "tag": "flowproof-web:productization-local",
+      "id": "sha256:0e9178cdf6cda1e7ebf904dcc1c12719138b6856ea3473a12f9b17733ba74fbc",
+      "size_bytes": 23133776
+    },
+    {
+      "tag": "flowproof-mock-accounting:productization-local",
+      "id": "sha256:368d13b189a14837272a97cd7bb43f6a27f9ba39664d2037d357651c317afb65",
+      "size_bytes": 86392419
+    }
+  ],
+  "run": {
+    "started_at": "2026-08-06T14:57:24.2475134Z",
+    "completed_at": "2026-08-06T14:59:19.5217218Z",
+    "duration_seconds": 115.275,
+    "temporary_data_root": "C:/Temp/flowproof-appliance-runtime-47108190c2a5431fb638db68a591660b",
+    "runner": "quality/productization/run-current-host-lifecycle.ps1",
+    "verdict": "PASS"
+  },
+  "stages": [
+    {
+      "name": "install_and_readiness",
+      "status": "PASS",
+      "evidence": {
+        "api_http_status": 200,
+        "web_http_status": 200,
+        "persisted_admin_count": 1
+      }
+    },
+    {
+      "name": "launcher_shortcut",
+      "status": "PASS",
+      "evidence": {
+        "shortcut_created": true,
+        "isolated_programs_root": true
+      }
+    },
+    {
+      "name": "backup",
+      "status": "PASS",
+      "evidence": {
+        "non_empty": true,
+        "sha256_sidecar": true,
+        "metadata_sidecar": true
+      }
+    },
+    {
+      "name": "sanitized_diagnostics",
+      "status": "PASS",
+      "evidence": {
+        "exact_generated_secret_scan": "PASS",
+        "required_members": [
+          "appliance-manifest.json",
+          "appliance-state.json",
+          "prerequisites.json",
+          "readiness.json",
+          "service-status.json"
+        ]
+      }
+    },
+    {
+      "name": "restart",
+      "status": "PASS",
+      "evidence": {
+        "service_health": "READY"
+      }
+    },
+    {
+      "name": "stop_start",
+      "status": "PASS",
+      "evidence": {
+        "stopped_health": "NOT_READY",
+        "started_health": "READY"
+      }
+    },
+    {
+      "name": "uninstall_preserve_and_reinstall",
+      "status": "PASS",
+      "evidence": {
+        "data_preserved": true,
+        "persisted_admin_count_before": 1,
+        "persisted_admin_count_after": 1
+      }
+    },
+    {
+      "name": "confirmed_full_delete",
+      "status": "PASS",
+      "evidence": {
+        "data_root_absent": true
+      }
+    }
+  ],
+  "post_run_cleanup": {
+    "container_count": 0,
+    "network_count": 0,
+    "data_root_present": false
+  },
+  "limitations": [
+    "This run started from a source checkout and is not fresh-machine evidence.",
+    "The manifest and image tags are development-only and are not release assets.",
+    "No GitHub Release, signing, SmartScreen, or clean-profile claim is made."
+  ]
+}

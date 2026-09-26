@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "id": "partial_side_effect",
+  "title": "Invoice persisted but downstream action fails",
+  "mock_mode": "partial_success",
+  "expected": {
+    "external_invoice_count": 1,
+    "forbidden_recovery_action": "register_missing_invoice",
+    "recovery_targets_only_missing_step": true
+  }
+}

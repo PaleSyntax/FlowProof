@@ -1,0 +1,152 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-flowproof}
+      POSTGRES_USER: ${POSTGRES_USER:-flowproof}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flowproof}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - flowproof-postgres:/var/lib/postgresql/data
+
+  mock-accounting:
+    build: ./mock-accounting
+    ports:
+      - "127.0.0.1:8001:8001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    # Development Compose keeps the historical self-contained bootstrap.
+    # Production uses the separate one-shot `migrate` service instead.
+    command:
+      - sh
+      - -ec
+      - alembic upgrade head && exec uvicorn flowproof.main:app --host 0.0.0.0 --port 8000
+    environment:
+      FLOWPROOF_ENV: ${FLOWPROOF_ENV:-development}
+      FLOWPROOF_TOKEN_PEPPER: ${FLOWPROOF_TOKEN_PEPPER:-development-only-pepper-must-be-replaced-before-production}
+      FLOWPROOF_ENABLE_LEGACY_HEADER_AUTH: ${FLOWPROOF_ENABLE_LEGACY_HEADER_AUTH:-false}
+      FLOWPROOF_SESSION_COOKIE_SECURE: ${FLOWPROOF_SESSION_COOKIE_SECURE:-false}
+      FLOWPROOF_SESSION_IDLE_SECONDS: ${FLOWPROOF_SESSION_IDLE_SECONDS:-7200}
+      FLOWPROOF_SESSION_ABSOLUTE_SECONDS: ${FLOWPROOF_SESSION_ABSOLUTE_SECONDS:-28800}
+      FLOWPROOF_API_TOKEN_DEFAULT_TTL_SECONDS: ${FLOWPROOF_API_TOKEN_DEFAULT_TTL_SECONDS:-86400}
+      FLOWPROOF_API_TOKEN_MAX_TTL_SECONDS: ${FLOWPROOF_API_TOKEN_MAX_TTL_SECONDS:-2592000}
+      # Explicit local-only qualification switches. Application startup rejects
+      # the fixture flag in production, and both remain off by default.
+      FLOWPROOF_FIXTURE_DEMO_ENABLED: ${FLOWPROOF_FIXTURE_DEMO_ENABLED:-false}
+      FLOWPROOF_XERO_PKCE_ENABLED: ${FLOWPROOF_XERO_PKCE_ENABLED:-false}
+      FLOWPROOF_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-flowproof}:${POSTGRES_PASSWORD:-flowproof}@postgres:5432/${POSTGRES_DB:-flowproof}
+      FLOWPROOF_CORS_ORIGIN: ${FLOWPROOF_CORS_ORIGIN:-http://localhost:5173}
+      FLOWPROOF_MOCK_ACCOUNTING_URL: http://mock-accounting:8001
+      FLOWPROOF_POLICY_PATH: /app/specs/policies/invoice-processing.yaml
+      FLOWPROOF_PROVIDER_CONTRACT_PATH: /app/specs/providers/mock-accounting/contract.json
+      FLOWPROOF_SCHEDULER_POLL_SECONDS: ${FLOWPROOF_SCHEDULER_POLL_SECONDS:-1}
+      FLOWPROOF_SCHEDULER_LEASE_SECONDS: ${FLOWPROOF_SCHEDULER_LEASE_SECONDS:-30}
+      FLOWPROOF_SCHEDULER_MAX_ATTEMPTS: ${FLOWPROOF_SCHEDULER_MAX_ATTEMPTS:-5}
+      FLOWPROOF_SCHEDULER_RETRY_BASE_SECONDS: ${FLOWPROOF_SCHEDULER_RETRY_BASE_SECONDS:-2}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mock-accounting:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: ["python", "-m", "flowproof.scheduler"]
+    # A process crash is restarted locally; `docker compose stop scheduler` remains an operator stop.
+    restart: unless-stopped
+    environment:
+      FLOWPROOF_ENV: ${FLOWPROOF_ENV:-development}
+      FLOWPROOF_TOKEN_PEPPER: ${FLOWPROOF_TOKEN_PEPPER:-development-only-pepper-must-be-replaced-before-production}
+      FLOWPROOF_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-flowproof}:${POSTGRES_PASSWORD:-flowproof}@postgres:5432/${POSTGRES_DB:-flowproof}
+      FLOWPROOF_MOCK_ACCOUNTING_URL: http://mock-accounting:8001
+      FLOWPROOF_POLICY_PATH: /app/specs/policies/invoice-processing.yaml
+      FLOWPROOF_PROVIDER_CONTRACT_PATH: /app/specs/providers/mock-accounting/contract.json
+      FLOWPROOF_SCHEDULER_POLL_SECONDS: ${FLOWPROOF_SCHEDULER_POLL_SECONDS:-1}
+      FLOWPROOF_SCHEDULER_LEASE_SECONDS: ${FLOWPROOF_SCHEDULER_LEASE_SECONDS:-30}
+      FLOWPROOF_SCHEDULER_MAX_ATTEMPTS: ${FLOWPROOF_SCHEDULER_MAX_ATTEMPTS:-5}
+      FLOWPROOF_SCHEDULER_RETRY_BASE_SECONDS: ${FLOWPROOF_SCHEDULER_RETRY_BASE_SECONDS:-2}
+    depends_on:
+      api:
+        condition: service_healthy
+      mock-accounting:
+        condition: service_healthy
+
+  alert-worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: ["python", "-m", "flowproof.alerts"]
+    restart: unless-stopped
+    environment:
+      FLOWPROOF_ENV: ${FLOWPROOF_ENV:-development}
+      FLOWPROOF_TOKEN_PEPPER: ${FLOWPROOF_TOKEN_PEPPER:-development-only-pepper-must-be-replaced-before-production}
+      FLOWPROOF_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-flowproof}:${POSTGRES_PASSWORD:-flowproof}@postgres:5432/${POSTGRES_DB:-flowproof}
+      FLOWPROOF_ALERT_WEBHOOK_URL: ${FLOWPROOF_ALERT_WEBHOOK_URL:-}
+    depends_on:
+      api:
+        condition: service_healthy
+
+  demo:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    profiles: ["demo"]
+    command: ["python", "/app/scripts/demo.py"]
+    environment:
+      FLOWPROOF_API_URL: http://api:8000/api/v1
+      MOCK_ACCOUNTING_URL: http://mock-accounting:8001
+      FLOWPROOF_TOKEN_PEPPER: ${FLOWPROOF_TOKEN_PEPPER:-development-only-pepper-must-be-replaced-before-production}
+      FLOWPROOF_DEMO_EVENT_TOKEN: ${FLOWPROOF_DEMO_EVENT_TOKEN:-}
+      FLOWPROOF_DEMO_ADMIN_NAME: ${FLOWPROOF_DEMO_ADMIN_NAME:-}
+      FLOWPROOF_DEMO_ADMIN_PASSWORD: ${FLOWPROOF_DEMO_ADMIN_PASSWORD:-}
+    depends_on:
+      api:
+        condition: service_healthy
+      mock-accounting:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:5173:8080"
+
+  n8n:
+    image: n8nio/n8n:2.30.5@sha256:450853cd21a2ce36587c4c860eb26927c1ceba9496bf55f4c213b5d3a6dc8c6f
+    profiles: ["n8n"]
+    environment:
+      N8N_ENCRYPTION_KEY: local-demo-only-change-before-shared-use
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "true"
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - n8n-data:/home/node/.n8n
+      - ./workflows:/workflows:ro
+
+volumes:
+  flowproof-postgres:
+  n8n-data:

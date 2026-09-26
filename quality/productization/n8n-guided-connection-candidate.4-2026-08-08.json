@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "started_at": "2026-08-08T12:22:50.3990083Z",
+  "completed_at": "2026-08-08T12:25:36.6085660Z",
+  "n8n_version": "2.30.5",
+  "evidence_classification": "LOCAL_REAL_N8N_TEST_FIXTURE_ONLY",
+  "runtime_scope": "EXTRACTED_CANDIDATE_LOCAL_QUALIFICATION",
+  "source_checkout_used_for_runtime": false,
+  "artifact": {
+    "filename": "FlowProof-Windows-x86_64-0.5.0-productization-candidate.4.zip",
+    "sha256": "014ff3c8237240d53fdaffa48ca77f218e9facf90e81826091c813e03dcdbbd4"
+  },
+  "real_n8n_execution_proven": true,
+  "real_provider_observation_proven": false,
+  "flowproof_connection": {
+    "operation_id": "4ded5d4e-b652-4bad-bd0b-e91261022c39",
+    "service_scopes": ["events:write", "recovery:execute", "recovery:verify"],
+    "workflow_ids": ["nIs7StdFzvy6tq4c", "U3wxWHKERLBglpeg", "e9OyyX7Q41yck9YB", "M9FtsPdkrBXiIrf9"],
+    "api_key_persisted_by_flowproof": false,
+    "manual_flowproof_token_copying": false
+  },
+  "workflow_count": 4,
+  "published_workflow_count": 3,
+  "credential_count": 1,
+  "public_api_exposed_credential_data": false,
+  "timeline_event_count": 2,
+  "source_system": "n8n",
+  "manual_flowproof_token_copying": false,
+  "n8n_api_key_persisted_by_flowproof": false,
+  "cleanup": {
+    "appliance_data_deleted": true,
+    "n8n_container_deleted": true,
+    "n8n_volume_deleted": true
+  },
+  "result": "PASS",
+  "blocker": null
+}

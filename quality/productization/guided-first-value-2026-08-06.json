@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "evidence_scope": "CURRENT_HOST_BROWSER_GOLDEN_PATH_ONLY",
+  "clean_machine_proof": false,
+  "source_checkout": true,
+  "evidence_classification": "TEST_FIXTURE_ONLY",
+  "positioning": "Outcome assurance for business-critical n8n automations",
+  "scenario": "invoice_false_200_missing_outcome",
+  "environment": {
+    "os": "Windows 11 23H2",
+    "browser_surface": "Codex in-app browser",
+    "application_url": "http://127.0.0.1:8080/",
+    "api_url": "http://127.0.0.1:8000/api/v1"
+  },
+  "acceptance_metrics": {
+    "running_to_first_demo_outcome_seconds": 6.062,
+    "guided_recovery_complete_seconds": 80.261,
+    "mandatory_decisions_before_first_outcome": 1,
+    "guided_actions_through_completion": 6,
+    "terminal_command_count_for_user": 0,
+    "manual_secret_handoff_count": 0,
+    "support_intervention_count": 0
+  },
+  "journey": [
+    {
+      "step": "start_safe_demo",
+      "status": "PASS",
+      "result": "fixture transport accepted"
+    },
+    {
+      "step": "independent_authoritative_read",
+      "status": "PASS",
+      "result": "AVAILABLE_ABSENT"
+    },
+    {
+      "step": "deterministic_incident",
+      "status": "PASS",
+      "result": "missing_external_invoice"
+    },
+    {
+      "step": "human_approval",
+      "status": "PASS",
+      "result": "recovery_approved"
+    },
+    {
+      "step": "one_narrow_compensation",
+      "status": "PASS",
+      "result": "one attempt, one transport invocation"
+    },
+    {
+      "step": "independent_postcondition_reread",
+      "status": "PASS",
+      "result": "AVAILABLE_PRESENT with exact id, amount, and currency"
+    },
+    {
+      "step": "final_resolution",
+      "status": "PASS",
+      "result": "incident resolved, recovery verified, invoice.verified appended"
+    }
+  ],
+  "proof_boundary": {
+    "real_n8n_execution_proven": false,
+    "real_provider_proven": false,
+    "customer_adoption_proven": false,
+    "fixture_source": "flowproof-safe-fixture",
+    "fixture_provider": "mock-accounting",
+    "recovery_authority": "MOCK_ACCOUNTING_FIXTURE_ONLY"
+  },
+  "visual_qa": {
+    "desktop_viewport": {
+      "width": 1280,
+      "height": 800,
+      "dom_structure": "PASS"
+    },
+    "mobile_viewport": {
+      "requested_width": 390,
+      "requested_height": 844,
+      "client_width": 375,
+      "horizontal_overflow": false,
+      "incident_detail_width": 293
+    },
+    "console_error_or_warning_count": 0,
+    "blank_screen": false,
+    "broken_asset_observed": false
+  },
+  "defects_found_and_corrected": [
+    "Frontend API hostname differed from the appliance page hostname and invalidated the session boundary.",
+    "Repeated invariant evaluation could demote an unchanged approved incident while leaving its plan approved.",
+    "Long correlation and evidence values forced horizontal overflow at the mobile breakpoint."
+  ],
+  "post_run_cleanup": {
+    "data_root_present": false,
+    "container_count": 0,
+    "network_count": 0
+  },
+  "limitations": [
+    "This proof used a source-built local appliance rather than a release asset.",
+    "The accepted execution signal is a safe fixture and explicitly not a real n8n execution.",
+    "Fresh-machine, signing, and real-provider gates remain unproven."
+  ],
+  "verdict": "PASS_WITH_EXPLICIT_FIXTURE_BOUNDARY"
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "evidence_scope": "EXTRACTED_CANDIDATE_CURRENT_HOST_UPDATE_AND_REAL_N8N_QUALIFICATION",
+  "fresh_machine_proof": false,
+  "candidate": {
+    "filename": "FlowProof-Windows-x86_64-0.5.0-productization-candidate.3.zip",
+    "bytes": 262524606,
+    "sha256": "7d46dc2905912c10619ce9badb02914021f06bc3a96f5cdb04bbb3c4ffcfcfc6",
+    "file_member_count": 15,
+    "unexpected_sensitive_member_count": 0,
+    "artifact_status": "UNSIGNED_CANDIDATE",
+    "code_signing": "UNSIGNED_SMARTSCREEN_GATE",
+    "git_commit": "da9057ac21be3fa7ac7e88d19bca9abc509abac9",
+    "git_tree": "f88908bf75dcd336e2df33a2907c6a53c313725d",
+    "git_coordinate_scope": "BASE_COMMIT_AND_TREE_WITH_WORKTREE_CANDIDATE_DIGEST",
+    "candidate_source_sha256": "97e65628f81a6104f911212634c4b5f2ade38bc2ffe635da512e603c5af96444"
+  },
+  "candidate_source_inventory": {
+    "filename": "candidate-source-inventory.json",
+    "file_count": 14,
+    "image_count": 4,
+    "recomputed_digest_match": true
+  },
+  "image_bundle": {
+    "filename": "flowproof-images.tar",
+    "sha256": "45c3633520f5046a873187c651dd0b6173336865045fbc8a61756eef17159a78",
+    "format": "docker-image-save-tar",
+    "image_count": 4,
+    "docker_load_result": "PASS",
+    "candidate_tags_missing_before_lifecycle": true,
+    "images": [
+      { "reference": "flowproof-api:0.5.0-productization-candidate.3", "id": "sha256:350c02719a4e268020b018958bbbf06fe1ced3b77280103ba5ee930b7837b59f" },
+      { "reference": "flowproof-web:0.5.0-productization-candidate.3", "id": "sha256:3d6496a038d106f1825fe4432f4b9c362e8979925cd7c2a17a83601f70f08611" },
+      { "reference": "flowproof-mock-accounting:0.5.0-productization-candidate.3", "id": "sha256:368d13b189a14837272a97cd7bb43f6a27f9ba39664d2037d357651c317afb65" },
+      { "reference": "postgres:16.14-alpine3.24@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777", "id": "sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777" }
+    ]
+  },
+  "packaging": {
+    "start_here": true,
+    "pitch_30_seconds": true,
+    "demo_script_3_minutes": true,
+    "supported_unsupported_matrix": true,
+    "backup_update_uninstall_instructions": true,
+    "exact_known_limitations": true
+  },
+  "lifecycle": {
+    "source_checkout_used_for_runtime": false,
+    "duration_seconds": 128.324,
+    "verdict": "PASS",
+    "stage_count": 8,
+    "passed_stage_count": 8,
+    "confirmed_full_delete": true
+  },
+  "update": {
+    "from_version": "0.5.0-productization-candidate.2",
+    "to_version": "0.5.0-productization-candidate.3",
+    "source_checkout_used_for_runtime": false,
+    "duration_seconds": 135.629,
+    "backup_first": true,
+    "backup_sidecars": true,
+    "data_preserved": true,
+    "persisted_admin_count_before": 1,
+    "persisted_admin_count_after": 1,
+    "injected_failure_rollback": true,
+    "previous_configuration_restored_ready": true,
+    "same_version_rejected_before_mutation": true,
+    "cleanup_pass": true,
+    "result": "PASS"
+  },
+  "n8n_guided_connection": {
+    "source_checkout_used_for_runtime": false,
+    "n8n_version": "2.30.5",
+    "workflow_count": 4,
+    "published_workflow_count": 3,
+    "credential_count": 1,
+    "timeline_event_count": 2,
+    "manual_flowproof_token_copying": false,
+    "n8n_api_key_persisted_by_flowproof": false,
+    "cleanup_pass": true,
+    "result": "PASS"
+  },
+  "truth_boundary": {
+    "real_n8n_execution_proven": true,
+    "fixture_evidence_classification": "LOCAL_REAL_N8N_TEST_FIXTURE_ONLY",
+    "real_provider_proven": false,
+    "fresh_machine_proven": false,
+    "signed_asset_proven": false,
+    "github_release_download_proven": false
+  }
+}

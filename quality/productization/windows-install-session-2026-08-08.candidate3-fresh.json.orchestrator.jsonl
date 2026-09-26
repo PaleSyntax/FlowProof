@@ -1,0 +1,7 @@
+{"timestamp":"2026-08-08T09:38:38.1139820Z","event":"orchestrator_started","stage":"initialize","detail":"probe_only=False"}
+{"timestamp":"2026-08-08T09:38:38.3508839Z","event":"credentials_prepared","stage":"prepare_credentials","detail":null}
+{"timestamp":"2026-08-08T09:38:38.5117771Z","event":"stage_started","stage":"stage_candidate","detail":null}
+{"timestamp":"2026-08-08T09:38:38.6926514Z","event":"stage_started","stage":"create_disposable_user","detail":null}
+{"timestamp":"2026-08-08T09:38:38.7235252Z","event":"orchestrator_failed","stage":"create_disposable_user","detail":"error_type=ParameterBindingValidationException; message=Не удается проверить аргумент для параметра \"Description\". Превышена допустимая длина аргумента 52. Сократите длину аргумента так, чтобы она не превышала \"48\" символов, и выполните команду еще раз."}
+{"timestamp":"2026-08-08T09:38:38.7588981Z","event":"fallback_write_failed","stage":"create_disposable_user","detail":"error_type=RuntimeException; message=Не удается преобразовать значение \"System.Collections.Specialized.OrderedDictionary\" типа \"System.Collections.Specialized.OrderedDictionary\" в тип \"System.Management.Automation.ErrorRecord\"."}
+{"timestamp":"2026-08-08T09:38:38.7936413Z","event":"cleanup_completed","stage":"cleanup","detail":"user_created=False;staging_present=False"}

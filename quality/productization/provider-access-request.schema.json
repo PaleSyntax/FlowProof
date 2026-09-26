@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowproof.local/schemas/provider-access-request.schema.json",
+  "title": "Owner-authorized observe-only provider access request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "request_id",
+    "requested_at",
+    "provider",
+    "safe_entity",
+    "authorization",
+    "operator",
+    "security"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "status": {"enum": ["OWNER_AUTHORIZED_PROVIDER_ACCESS_REQUIRED", "READY_FOR_ADAPTER_IMPLEMENTATION"]},
+    "request_id": {"type": ["string", "null"], "format": "uuid"},
+    "requested_at": {"type": ["string", "null"], "format": "date-time"},
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider_name",
+        "provider_id",
+        "environment",
+        "official_api_version",
+        "documentation_url",
+        "sandbox_base_url",
+        "authentication_mode",
+        "credential_reference"
+      ],
+      "properties": {
+        "provider_name": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
+        "provider_id": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+        "environment": {"type": ["string", "null"], "enum": ["sandbox", "partner_test", null]},
+        "official_api_version": {"type": ["string", "null"], "minLength": 1, "maxLength": 64},
+        "documentation_url": {"type": ["string", "null"], "format": "uri"},
+        "sandbox_base_url": {"type": ["string", "null"], "format": "uri"},
+        "authentication_mode": {"type": ["string", "null"], "minLength": 1, "maxLength": 64},
+        "credential_reference": {
+          "type": ["string", "null"],
+          "pattern": "^(?:not-applicable|(?:env|file|docker-secret|vault|aws-secrets-manager|gcp-secret-manager|azure-key-vault):[A-Za-z0-9][A-Za-z0-9._/@:-]{0,254})$"
+        }
+      },
+      "allOf": [{
+        "if": {
+          "properties": {"authentication_mode": {"type": "string", "pattern": "PKCE"}},
+          "required": ["authentication_mode"]
+        },
+        "then": {"properties": {"credential_reference": {"const": "not-applicable"}}},
+        "else": {"properties": {"credential_reference": {
+          "type": ["string", "null"],
+          "pattern": "^(?:(?:env|file|docker-secret|vault|aws-secrets-manager|gcp-secret-manager|azure-key-vault):[A-Za-z0-9][A-Za-z0-9._/@:-]{0,254})$"
+        }}}
+      }]
+    },
+    "safe_entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["invoice_id", "expected_exists", "expected_amount", "currency", "contains_customer_data"],
+      "properties": {
+        "invoice_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 255},
+        "expected_exists": {"type": ["boolean", "null"]},
+        "expected_amount": {"type": ["number", "null"], "minimum": 0},
+        "currency": {"type": ["string", "null"], "pattern": "^[A-Z]{3}$"},
+        "contains_customer_data": {"const": false}
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_name",
+        "authorized_at",
+        "expires_at",
+        "authorization_reference",
+        "observe_only",
+        "permitted_methods",
+        "permitted_path_template",
+        "mutations_allowed",
+        "recovery_write_authorized"
+      ],
+      "properties": {
+        "owner_name": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
+        "authorized_at": {"type": ["string", "null"], "format": "date-time"},
+        "expires_at": {"type": ["string", "null"], "format": "date-time"},
+        "authorization_reference": {"type": ["string", "null"], "minLength": 1, "maxLength": 255},
+        "observe_only": {"const": true},
+        "permitted_methods": {"const": ["GET"]},
+        "permitted_path_template": {"type": ["string", "null"], "minLength": 1, "maxLength": 255},
+        "mutations_allowed": {"const": false},
+        "recovery_write_authorized": {"const": false}
+      }
+    },
+    "operator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "role"],
+      "properties": {
+        "name": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
+        "role": {"type": ["string", "null"], "minLength": 1, "maxLength": 128}
+      }
+    },
+    "security": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw_secret_in_artifact", "raw_customer_payload_authorized", "rollback_required_for_read_only"],
+      "properties": {
+        "raw_secret_in_artifact": {"const": false},
+        "raw_customer_payload_authorized": {"const": false},
+        "rollback_required_for_read_only": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "READY_FOR_ADAPTER_IMPLEMENTATION"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "request_id": {"type": "string"},
+          "requested_at": {"type": "string"},
+          "provider": {
+            "properties": {
+              "provider_name": {"type": "string"},
+              "provider_id": {"type": "string", "not": {"const": "mock-accounting"}},
+              "environment": {"enum": ["sandbox", "partner_test"]},
+              "official_api_version": {"type": "string"},
+              "documentation_url": {"type": "string"},
+              "sandbox_base_url": {"type": "string"},
+              "authentication_mode": {"type": "string"},
+              "credential_reference": {"type": "string"}
+            }
+          },
+          "safe_entity": {
+            "properties": {
+              "invoice_id": {"type": "string"},
+              "expected_exists": {"type": "boolean"},
+              "expected_amount": {"type": "number"},
+              "currency": {"type": "string"}
+            }
+          },
+          "authorization": {
+            "properties": {
+              "owner_name": {"type": "string"},
+              "authorized_at": {"type": "string"},
+              "expires_at": {"type": "string"},
+              "authorization_reference": {"type": "string"},
+              "permitted_path_template": {"type": "string"}
+            }
+          },
+          "operator": {
+            "properties": {
+              "name": {"type": "string"},
+              "role": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  ]
+}

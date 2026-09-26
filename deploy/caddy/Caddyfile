@@ -1,0 +1,59 @@
+{
+    email {$FLOWPROOF_TLS_EMAIL}
+    log {
+        output stdout
+        format json
+    }
+}
+
+http://{$FLOWPROOF_DOMAIN} {
+    redir https://{host}{uri} permanent
+}
+
+# The Docker health probe stays on loopback and exercises an actual reverse
+# proxy hop. It is not an Internet route and does not weaken the TLS boundary.
+http://127.0.0.1 {
+    @local_proxy_health {
+        path /health/caddy-proxy
+        remote_ip 127.0.0.1 ::1
+    }
+    handle @local_proxy_health {
+        rewrite * /health/live
+        reverse_proxy api:8000
+    }
+    respond 404
+}
+
+https://{$FLOWPROOF_DOMAIN} {
+    encode zstd gzip
+    header {
+        -Server
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    @metrics path /metrics
+    respond @metrics 403
+
+    @api path /api/* /docs* /openapi.json /health/*
+    handle @api {
+        reverse_proxy api:8000
+    }
+
+    # Only published n8n webhook paths are public. The editor/admin endpoint
+    # is intentionally absent from this public hostname and must use a
+    # separately managed private operator boundary (for example an SSH tunnel).
+    @n8n_webhooks path /n8n/webhook/*
+    handle @n8n_webhooks {
+        uri strip_prefix /n8n
+        reverse_proxy n8n:5678
+    }
+
+    @n8n_private path /n8n/*
+    respond @n8n_private 404
+
+    handle {
+        reverse_proxy web:8080
+    }
+}
