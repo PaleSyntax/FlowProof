@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_OUTPUT = (
     "Release status check passed: 0.6.0 / PORTFOLIO_RELEASE_CANDIDATE / "
     "LOCAL_PORTFOLIO_RELEASE_READY / NOT_VERIFIED_EXTERNAL / "
-    "NOT_VERIFIED_EXTERNAL / PRIVATE_UNPUBLISHED"
+    "NOT_VERIFIED_EXTERNAL / BRANCH_PUBLISHED"
 )
 
 
@@ -32,10 +32,10 @@ def test_release_status_keeps_portfolio_and_external_claims_separate() -> None:
     assert status["package_version"] == "0.6.0"
     assert status["portfolio_release"] == {
         "classification": "PORTFOLIO_RELEASE_CANDIDATE",
-        "publication_state": "PRIVATE_UNPUBLISHED",
-        "repository_visibility": "PRIVATE",
+        "publication_state": "BRANCH_PUBLISHED",
+        "repository_visibility": "PUBLIC",
         "target_tag": "v0.6.0",
-        "professional_destination": "OWNER_INPUT_REQUIRED",
+        "professional_destination": "https://github.com/PaleSyntax/FlowProof",
     }
     assert {
         name: axis["status"] for name, axis in status["acceptance_axes"].items()
