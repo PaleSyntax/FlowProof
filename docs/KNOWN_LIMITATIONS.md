@@ -6,15 +6,13 @@
 - Clean lock-based Python, fresh `npm ci`, runtime, pinned Gitleaks, visual QA,
   exact Windows packaging, extracted current-host lifecycle, source-free n8n
   onboarding, and owned-image Trivy pass locally for the current candidate.
-- The repository is private and no professional destination has been supplied.
-  Visibility will not be changed on the current personal remote automatically.
-- GitHub Actions previously ended before executing steps because of external
-  billing/quota state. A zero-step run is `UNKNOWN`, never PASS or a code-test FAIL.
-- PR #8 is merged. PR #7 remains a historical draft until its unique diff is
-  reviewed; this document does not claim it has been closed.
-- Test/runtime `.tmp/` is ignored but cannot currently be physically removed by
-  the sandbox identity because its child ACL is owned by another sandbox context.
-  It is excluded from release-tree and archive inputs.
+- The clean source is public at `PaleSyntax/FlowProof`. This repository contains
+  no downloadable Windows ZIP or signed installer.
+- Primary `ci.yml` is configured for pushes to `main`, pull requests and manual
+  dispatch. Container security, deployment proof and external dependency
+  advisory workflows remain manual.
+- Earlier billing-blocked Actions runs in the private source are historical
+  `UNKNOWN` results; they do not describe the public repository's CI.
 
 ## Product boundaries that remain after portfolio publication
 
@@ -83,23 +81,14 @@
 - Real-provider recovery writes remain disabled. Observe-only authorization
   cannot be reused as write authority.
 
-## Candidate and evidence status
+## Release evidence
 
-- The following coordinates are historical v0.5.0 evidence. PR #8 is now merged;
-  PR #7 remains historical `DRAFT_SOURCE_HISTORY` and has not been mutated by this work.
-- Local commit `d720f0b8` / tree `d32fbd24` is `LOCAL_RELEASE_READY` for the
-  repository-owned production core independently of publication state.
-- The local pass covers backend, frontend, contracts, shell, Compose, PostgreSQL lifecycle,
-  deployment and FlowProof-owned image security for that exact tree.
-- The candidate branch is published. The authorized pre-successor observation was
-  `28289a8eb6fb9a7bd3626b95f454f6b7ec9f5cf4` / `9cad31f060b8800167b74c5aa108030dcd759f36`,
-  63 commits and 130 files; final release coordinates remain live external evidence.
-- GitHub Actions jobs were rejected before executing any step because of account
-  billing/quota state. Their test outcome is `UNKNOWN/UNVERIFIED`, not FAIL and not PASS.
-- The next gate is `OWNER_AUTHORIZED_EXTERNAL_ACCEPTANCE`.
-- A sandbox ZIP or agent report is not authoritative evidence. GitHub exact head/tree and
-  applicable artifacts are required for publication or a current-PR claim; the local axis
-  requires its own exact local commit/tree evidence.
+- This document describes the clean public source at `PaleSyntax/FlowProof`.
+  Earlier validation of private-source candidates does not establish the
+  behavior of a different public commit or a live accounting connection.
+- Check the exact public commit, its CI result and the local demo evidence for
+  claims about the published version. A Windows installer and live Xero recovery
+  remain unverified.
 
 ## Provider boundary
 
